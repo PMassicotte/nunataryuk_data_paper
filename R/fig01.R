@@ -106,7 +106,7 @@ poi <- tibble(
     -134,
     -134.9,
     -137.8,
-    -134.3,
+    -134.25,
     -137,
     -136.8
   ),
@@ -128,7 +128,7 @@ poi <- tibble(
     "Kugmallit Bay",
     "Shallow Bay",
     "Mackenzie Bay",
-    "Kittigazuit",
+    "Kittigazuit\nBay",
     "Beaufort Sea",
     "Shingle Point"
   )
