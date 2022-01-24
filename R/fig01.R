@@ -178,8 +178,8 @@ p1 <- ggplot() +
   geom_sf(data = wm, size = 0.15) +
   geom_sf(
     data = river_network %>% st_intersection(wm),
-    size = 0.01,
-    color = "grey75"
+    size = 0.1,
+    color = "grey50"
   ) +
   geom_sf(
     data = st_jitter(stations_sf),

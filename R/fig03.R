@@ -39,9 +39,9 @@ files <-
 
 # bbox used to crop
 bb <- st_bbox(c(
-  xmin = -150,
-  xmax = -130,
-  ymin = 68,
+  xmin = -170,
+  xmax = -80,
+  ymin = 40,
   ymax = 80
 ), crs = 4326)
 
@@ -101,7 +101,7 @@ p <- sic %>%
   ggplot() +
   geom_sf(aes(fill = tc_mid / 100), color = NA) +
   geom_sf(data = wm, size = 0.01) +
-  geom_sf(data = river_network, size = 0.01, color = "gray75") +
+  geom_sf(data = river_network, size = 0.1, color = "gray50") +
   geom_sf(
     data = st_jitter(stations_sf),
     aes(color = factor(expedition)),
@@ -121,7 +121,7 @@ p <- sic %>%
     )
   ) +
   paletteer::scale_fill_paletteer_c(
-    "ggthemes::Blue",
+    "pals::kovesi.linear_blue_95_50_c20",
     # direction = -1,
     labels = scales::label_percent(),
     guide = guide_colorbar(
@@ -145,7 +145,7 @@ p <- sic %>%
   facet_wrap(~date) +
   theme(
     panel.grid = element_blank(),
-    panel.background = element_rect(fill = "#063F6F"),
+    # panel.background = element_rect(fill = "#063F6F"),
     panel.border = element_blank(),
     legend.justification = c(0, 0),
     legend.position = c(0.01, 0.01),
