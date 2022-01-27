@@ -1,3 +1,12 @@
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+# AUTHOR:       Philippe Massicotte
+#
+# DESCRIPTION:  Maps showing sea ice concentration at four different dates (one
+# for each leg).
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+rm(list = ls())
+
 # curl::curl_download("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G10033/north/weekly/shapefile/nh_20191003.zip", destfile = "~/Desktop/test.zip")
 
 # Stations ----------------------------------------------------------------
@@ -32,7 +41,7 @@ df %>%
 # SIC ---------------------------------------------------------------------
 
 files <- fs::dir_ls(
-  here("data/raw/ice_cover/sic/"),
+  here("data", "raw", "ice_cover", "sic"),
   recurse = TRUE,
   glob = "*.shp"
 )
@@ -140,7 +149,7 @@ p <- sic %>%
   coord_sf(
     xlim = c(-140, -130),
     ylim = c(68, 70.5),
-    expand = FALSE
+    expand = TRUE
   ) +
   facet_wrap(~date) +
   theme(
@@ -152,7 +161,8 @@ p <- sic %>%
     strip.text = element_text(hjust = 0, size = 14, face = "bold"),
     strip.background = element_blank(),
     axis.ticks = element_blank(),
-    axis.title = element_blank()
+    axis.title = element_blank(),
+    axis.text = element_text(size = 6)
   )
 
 filename <- here("graphs", "fig05.pdf")

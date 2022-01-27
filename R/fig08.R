@@ -1,3 +1,11 @@
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+# AUTHOR:       Philippe Massicotte
+#
+# DESCRIPTION:  Boxplots showing the nutrients across the different legs.
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+rm(list = ls())
+
 stations <- read_csv(here(
   "data",
   "clean",

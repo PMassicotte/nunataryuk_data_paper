@@ -90,7 +90,7 @@ p <- ggplot() +
   coord_sf(
     xlim = c(-140, -130),
     ylim = c(68, 70.5),
-    expand = FALSE
+    expand = TRUE
   ) +
   labs(
     color = "Salinity"
@@ -105,7 +105,8 @@ p <- ggplot() +
     strip.text = element_text(size = 14, face = "bold"),
     strip.background = element_blank(),
     axis.ticks = element_blank(),
-    axis.title = element_blank()
+    axis.title = element_blank(),
+    axis.text = element_text(size = 6)
   )
 
 filename <- here("graphs", "fig04.pdf")

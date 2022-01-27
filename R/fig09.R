@@ -1,4 +1,8 @@
-# Showing bacteria abundances across the expeditions.
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+# AUTHOR:       Philippe Massicotte
+#
+# DESCRIPTION:  Boxplots showing bacteria abundances across the expeditions.
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 rm(list = ls())
 
@@ -61,7 +65,7 @@ p <- p1 + p2 +
   plot_annotation(tag_levels = "A") &
   theme(plot.tag = element_text(face = "bold"))
 
-filename <- here("graphs", "fig10.pdf")
+filename <- here("graphs", "fig09.pdf")
 
 ggsave(
   filename,
