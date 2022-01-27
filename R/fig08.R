@@ -1,11 +1,3 @@
-# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-# AUTHOR:       Philippe Massicotte
-#
-# DESCRIPTION:  Bio-optical plots
-# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
-
-rm(list = ls())
-
 stations <- read_csv(here(
   "data",
   "clean",
@@ -15,91 +7,115 @@ stations <- read_csv(here(
 
 stations
 
+stations %>%
+  count(sample_id, date_time_dd_mm_yyyy_hh_mm, depth_water_m, expedition, sort = TRUE) %>%
+  assertr::verify(n == 1)
+
+stations %>%
+  count(expedition, sample_id)
+
 # Plot --------------------------------------------------------------------
 
 p1 <- stations %>%
-  ggplot(aes(x = a_p443_1_m, y = poc_mug_ml)) +
-  geom_point(aes(color = factor(expedition))) +
-  paletteer::scale_color_paletteer_d(
-    "suffrager::london",
-    breaks = c(1, 2, 3, 4),
-    labels = function(x) {
-      paste("Leg", x)
-    }
-  ) +
-  scale_x_log10() +
+  ggplot(aes(
+    x = factor(expedition),
+    y = no3_mumol_l,
+    fill = factor(expedition)
+  )) +
+  geom_boxplot(size = 0.1, outlier.size = 0.1) +
   scale_y_log10() +
-  annotation_logticks(sides = "bl", size = 0.25) +
-  geom_smooth(method = "lm", size = 0.5) +
-  ggpmisc::stat_poly_eq(
-    aes(label = ..eq.label..),
-    label.y.npc = 1,
-    size = 2.5,
-    family = "Montserrat"
-  ) +
-  ggpmisc::stat_poly_eq(
-    label.y.npc = 0.93,
-    aes(label = ..rr.label..),
-    size = 2.5,
-    family = "Montserrat"
-  ) +
+  annotation_logticks(sides = "l", size = 0.1) +
   labs(
     x = NULL,
-    y = quote(POC ~ (mu*g~mL^{-1}))
+    y = quote(NO[3]^{"-"} ~ (mu*Mol~L^{-1}))
   ) +
+  paletteer::scale_fill_paletteer_d("suffrager::london") +
   theme(
-    panel.border = element_blank(),
     legend.position = "none",
-    legend.title = element_blank(),
-    axis.ticks = element_blank()
+    axis.ticks = element_blank(),
+    axis.text.x = element_blank(),
+    panel.border = element_blank()
   )
 
 p2 <- stations %>%
-  ggplot(aes(x = a_p443_1_m, y = tpc_mug_m_l)) +
-  geom_point(aes(color = factor(expedition))) +
-  paletteer::scale_color_paletteer_d(
-    "suffrager::london",
-    breaks = c(1, 2, 3, 4),
-    labels = function(x) {
-      paste("Leg", x)
-    }
-  ) +
-  scale_x_log10() +
+  ggplot(aes(x = factor(expedition), y = no2_mumol_l, fill = factor(expedition))) +
+  geom_boxplot(size = 0.1, outlier.size = 0.1) +
   scale_y_log10() +
-  annotation_logticks(sides = "bl", size = 0.25) +
-  geom_smooth(method = "lm", size = 0.5) +
-  ggpmisc::stat_poly_eq(
-    aes(label = ..eq.label..),
-    label.y.npc = 1,
-    size = 2.5,
-    family = "Montserrat"
-  ) +
-  ggpmisc::stat_poly_eq(
-    label.y.npc = 0.93,
-    aes(label = ..rr.label..),
-    size = 2.5,
-    family = "Montserrat"
-  ) +
+  annotation_logticks(sides = "l", size = 0.1) +
+  scale_x_discrete(labels = function(x) {glue("Leg {x}")}) +
+  paletteer::scale_fill_paletteer_d("suffrager::london",) +
   labs(
-    x = quote(a[p]~(443)~(m^{-1})),
-    y = quote(TPC ~ (mu*g~mL^{-1}))
+    x = NULL,
+    y = quote(NO[2]^{"-"} ~ (mu*Mol~L^{-1}))
   ) +
   theme(
-    panel.border = element_blank(),
-    legend.justification = c(1, 0),
-    legend.position = c(0.95, 0.05),
-    legend.title = element_blank(),
-    axis.ticks = element_blank()
+    legend.position = "none",
+    axis.ticks = element_blank(),
+    axis.text.x = element_blank(),
+    panel.border = element_blank()
   )
 
-p <- p1 / p2 +
+p3 <- stations %>%
+  ggplot(aes(x = factor(expedition), y = po4_mumol_l, fill = factor(expedition))) +
+  geom_boxplot(size = 0.1, outlier.size = 0.1) +
+  scale_y_log10() +
+  annotation_logticks(sides = "l", size = 0.1) +
+  scale_x_discrete(labels = function(x) {glue("Leg {x}")}) +
+  paletteer::scale_fill_paletteer_d("suffrager::london",) +
+  labs(
+    x = NULL,
+    y = quote(PO[4]^{"3-"} ~ (mu*Mol~L^{-1}))
+  ) +
+  theme(
+    legend.position = "none",
+    axis.ticks = element_blank(),
+    panel.border = element_blank()
+  )
+
+p4 <- stations %>%
+  ggplot(aes(x = factor(expedition), y = si_o4_mumol_l, fill = factor(expedition))) +
+  geom_boxplot(size = 0.1, outlier.size = 0.1) +
+  scale_y_log10() +
+  annotation_logticks(sides = "l", size = 0.1) +
+  scale_x_discrete(labels = function(x) {glue("Leg {x}")}) +
+  paletteer::scale_fill_paletteer_d("suffrager::london",) +
+  labs(
+    x = NULL,
+    y = quote(sio[4]^4["-"] ~ (mu*Mol~L^{-1}))
+  ) +
+  theme(
+    legend.position = "none",
+    axis.ticks = element_blank(),
+    panel.border = element_blank()
+  )
+
+p <- p1 + p2 + p3 + p4 +
+  plot_layout(ncol = 2) +
   plot_annotation(tag_levels = "A") &
   theme(plot.tag = element_text(face = "bold"))
 
+filename <- here("graphs", "fig08.pdf")
+
 ggsave(
-  here("graphs/fig08.pdf"),
+  filename,
   device = cairo_pdf,
-  width = 120,
-  height = 160,
+  width = 180,
+  height = 120,
   units = "mm"
 )
+
+## Stats for the paper ----
+
+stations %>%
+  select(
+    expedition,
+    no3_mumol_l,
+    no2_mumol_l,
+    po4_mumol_l,
+    si_o4_mumol_l
+  ) %>%
+  group_by(expedition) %>%
+  summarise(across(
+    c(no3_mumol_l, no2_mumol_l, po4_mumol_l, si_o4_mumol_l),
+    .fns = list(min = min, max = max, mean = mean), na.rm = TRUE
+  ))

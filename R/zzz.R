@@ -1,4 +1,4 @@
-pdf2png <- function(filename, format = "png", outdir = here::here("graphs/png/"), dpi = 300) {
+pdf2png <- function(filename, format = "png", outdir = here::here("graphs", "png"), dpi = 300) {
   if (!fs::dir_exists(outdir)) {
     fs::dir_create(outdir)
   }

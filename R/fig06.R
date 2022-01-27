@@ -1,91 +1,52 @@
-discharge <- readxl::read_excel(here(
-  "data",
-  "raw",
-  "Mackenzie_ArcticRedRiver_Version_20211118.xlsx"
-)) %>%
-  mutate(date = as.Date(date))
+rm(list = ls())
 
-discharge
+source(here("R", "ggboxplot.R"))
 
-discharge <- discharge %>%
-  filter(lubridate::year(date) == 2019) %>%
-  mutate(discharge = parse_number(discharge))
+df <- read_csv(here("data", "clean", "merged_data.csv"))
 
-discharge
+df
 
-stations <- read_csv(here("data", "clean", "merged_data.csv"))
-
-df <- stations %>%
-  mutate(date = as.Date(date_time_dd_mm_yyyy_hh_mm)) %>%
-  inner_join(discharge, by = "date")
-
-df %>%
-  ggplot(aes(x = discharge, y = tpc_mug_m_l, color = factor(expedition))) +
-  geom_point()
-
-# Lag correlation ---------------------------------------------------------
-
-d2 <- discharge %>%
-  select(date, discharge)
-
-df_discharge <- stations %>%
-  mutate(date = as.Date(date_time_dd_mm_yyyy_hh_mm)) %>%
+df_viz <- df %>%
   select(
-    sample_id,
+    event,
     expedition,
-    date,
-    a_p443_1_m,
+    depth_water_m,
+    sal_ctd,
+    temp_ctd_c,
+    d18o_vs_smow,
+    a_cdom350_1_m,
+    a_cdom443_1_m,
+    doc_mg_l,
     spm_mg_l,
     poc_mug_ml,
+    a_p443_1_m
   ) %>%
-  inner_join(d2, by = character()) %>%
-  rename(date = date.x, discharge_date = date.y)
+  mutate(suva350 = a_cdom350_1_m / doc_mg_l)
 
-df_discharge
+# Boxplots ----------------------------------------------------------------
 
-df_discharge %>%
-  count(sample_id, expedition, date) %>%
-  assertr::verify(n == 365)
+p1 <- ggboxlpot(df_viz, expedition = expedition, y = sal_ctd, ylab = "Salinity")
+p2 <- ggboxlpot(df_viz, expedition = expedition, y = temp_ctd_c, ylab = "Temperature~(C)")
+p3 <- ggboxlpot(df_viz, expedition = expedition, y = d18o_vs_smow, ylab = "delta~O^{18}")
+p4 <- ggboxlpot(df_viz, expedition = expedition, y = a_cdom443_1_m, ylab = "a[CDOM](443)~(m^{-1})")
+p5 <- ggboxlpot(df_viz, expedition = expedition, y = doc_mg_l, ylab = "DOC~(mg~L^{-1})")
+p6 <- ggboxlpot(df_viz, expedition = expedition, y = suva350, ylab = "SUVA[350]~(checkunit)")
+p7 <- ggboxlpot(df_viz, expedition = expedition, y = spm_mg_l, ylab = "SPM~(mg~L^{-1})")
+p8 <- ggboxlpot(df_viz, expedition = expedition, y = poc_mug_ml, ylab = "POC~(mu*g~mL^{-1})")
+p9 <- ggboxlpot(df_viz, expedition = expedition, y = a_p443_1_m, ylab = "a[p](443)~(m^{-1})")
 
-df_viz <- df_discharge %>%
-  pivot_longer(a_p443_1_m:poc_mug_ml, names_to = "variable", values_to = "value") %>%
-  drop_na(value, discharge) %>%
-  mutate(date_difference = date - discharge_date) %>%
-  mutate(date_difference = as.numeric(date_difference)) %>%
-  filter(between(date_difference, 0, 15)) %>%
-  group_nest(date_difference, variable) %>%
-  mutate(correlation = map_dbl(data, ~cor(log10(.$value), .$discharge)), n = n())
+# Combine and save --------------------------------------------------------
 
-df_viz
+p <- p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 +
+  plot_layout(ncol = 3, nrow = 3) +
+  plot_annotation(tag_levels = "A") &
+  theme(plot.tag = element_text(face = "bold"))
 
-lab <- c(
-  a_p443_1_m = "aP",
-  poc_mug_ml = "POC",
-  spm_mg_l = "SPM"
-)
-
-p <- df_viz %>%
-  filter(n >= 20) %>%
-  ggplot(aes(x = date_difference, y = correlation)) +
-  geom_line() +
-  geom_point(size = 2) +
-  scale_y_continuous(breaks = scales::breaks_pretty(n = 6)) +
-  labs(
-    x = "Number of days prior to the sampling",
-    y = quote("Pearson's correlation" ~(italic(r)))
-  ) +
-  facet_wrap(~variable, ncol = 1, labeller = labeller(variable = lab)) +
-  theme(
-    panel.border = element_blank(),
-    axis.ticks = element_blank()
-  )
-
-filename <- here("graphs", "fig06.pdf")
 
 ggsave(
-  filename,
+  here("graphs", "fig06.pdf"),
   device = cairo_pdf,
-  width = 100,
-  height = 160,
+  width = 200,
+  height = 140,
   units = "mm"
 )
