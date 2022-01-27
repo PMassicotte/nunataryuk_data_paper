@@ -1,4 +1,10 @@
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+# AUTHOR:       Philippe Massicotte
+#
+# DESCRIPTION:  Maps showing the salinity across the four Legs.
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
+rm(list = ls())
 
 df <- read_csv(here("data", "clean", "merged_data.csv")) %>%
   distinct(
@@ -18,12 +24,10 @@ df %>%
   add_count(event, sort = TRUE) %>%
   assertr::verify(n == 1)
 
-
 df_sf <- df %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
 
 df_sf
-
 
 # bbox used to crop -------------------------------------------------------
 
