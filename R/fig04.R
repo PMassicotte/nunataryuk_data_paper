@@ -1,33 +1,65 @@
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # AUTHOR:       Philippe Massicotte
 #
-# DESCRIPTION:  Maps showing the salinity across the four Legs.
+# DESCRIPTION:  Maps showing sea ice concentration at four different dates (one
+# for each leg).
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 rm(list = ls())
 
-df <- read_csv(here("data", "clean", "merged_data.csv")) %>%
-  distinct(
-    event,
-    expedition,
-    depth_water_m,
-    longitude = longitude_dec_deg,
-    latitude = latitude_dec_deg,
-    sal_ctd
+# curl::curl_download("ftp://sidads.colorado.edu/pub/DATASETS/NOAA/G10033/north/weekly/shapefile/nh_20191003.zip", destfile = "~/Desktop/test.zip")
+
+# SIC ---------------------------------------------------------------------
+
+files <- fs::dir_ls(
+  here("data", "raw", "ice_cover", "sic"),
+  recurse = TRUE,
+  glob = "*.shp"
+)
+
+# LUT for dates -----------------------------------------------------------
+
+# Create a LUT to match the SIC dates and the leg numbers
+
+files %>%
+  str_match("\\d{8}") %>%
+  as.Date("%Y%m%d")
+
+lut <- tibble(
+  expedition = c(1, 2, 3, 4),
+  date = as.Date(c("2019-04-25", "2019-06-20", "2019-07-25", "2019-09-05"))
+) %>%
+  mutate(expedition2 = glue("Leg {expedition} ({date})"))
+
+# Stations ----------------------------------------------------------------
+
+df <- readxl::read_excel(
+  here("data", "raw", "Nunataryuk WP4 Mackenzie 2019.xlsx"),
+  sheet = "Sub dataset 1",
+  .name_repair = janitor::make_clean_names
+)
+
+df
+
+stations <- df %>%
+  distinct(expedition, longitude_dec_deg, latitude_dec_deg)
+
+stations_sf <- stations %>%
+  st_as_sf(
+    coords = c("longitude_dec_deg", "latitude_dec_deg"),
+    crs = 4326
   ) %>%
-  group_by(event) %>%
-  filter(depth_water_m == min(depth_water_m, na.rm = TRUE)) %>%
-  ungroup() %>%
-  drop_na()
+  left_join(lut, by = "expedition")
+
+# Based on the sampling date, I choose SIC to represent the middle date of the
+# sampling per expedition
 
 df %>%
-  add_count(event, sort = TRUE) %>%
-  assertr::verify(n == 1)
-
-df_sf <- df %>%
-  st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
-
-df_sf
+  mutate(date = lubridate::parse_date_time(utc_date_time_dd_mm_yy_hh_mm, orders = "dmyHM")) %>%
+  mutate(date = as.Date(date)) %>%
+  distinct(expedition, date) %>%
+  drop_na() %>%
+  arrange(expedition, date)
 
 # bbox used to crop -------------------------------------------------------
 
@@ -37,6 +69,36 @@ bb <- st_bbox(c(
   ymin = 40,
   ymax = 80
 ), crs = 4326)
+
+
+sic <- map(files, st_read) %>%
+  set_names(files) %>%
+  do.call(what = sf:::rbind.sf, .) %>%
+  rownames_to_column(var = "date") %>%
+  mutate(date = str_match(date, "\\d{8}")) %>%
+  mutate(date = as.Date(date, format = "%Y%m%d"))
+
+sic
+
+bb_stereo <- bb %>%
+  st_as_sfc() %>%
+  st_transform(crs = st_crs(sic))
+
+sic <- sic %>%
+  st_make_valid() %>%
+  st_crop(st_bbox(bb_stereo)) %>%
+  st_transform(crs = 4326)
+
+# Set the expedition/leg number
+sic <- sic %>%
+  mutate(expedition = case_when(
+    lubridate::month(date) == 4 ~ 1,
+    lubridate::month(date) == 6 ~ 2,
+    lubridate::month(date) == 7 ~ 3,
+    lubridate::month(date) == 9 ~ 4,
+    TRUE ~ NA_real_
+  )) %>%
+  left_join(lut, by = c("date", "expedition"))
 
 # WM ----------------------------------------------------------------------
 
@@ -71,42 +133,59 @@ river_network <-
 
 # Plot --------------------------------------------------------------------
 
-p <- ggplot() +
+p <- sic %>%
+  ggplot() +
+  geom_sf(aes(fill = tc_mid / 100), color = NA) +
   geom_sf(data = wm, size = 0.01) +
   geom_sf(data = river_network, size = 0.1, color = "gray50") +
-  geom_sf(data = df_sf, aes(color = sal_ctd), size = 1) +
-  scale_color_viridis_c(
-    option = "C",
-    trans = "log10",
-    guide = guide_colorbar(
-      title.position = "top",
-      barwidth = unit(3, "cm"),
-      barheight = unit(0.25, "cm"),
-      label.theme = element_text(size = 6, family = "Montserrat"),
-      title.theme = element_text(size = 8, family = "Montserrat")
-    ),
-    breaks = c(0, 0.01, 0.1, 1, 10, 30),
-    labels = c(0, 0.01, 0.1, 1, 10, 30),
-    limits = c(0.01, 40),
-    oob = scales::squish
+  geom_sf(
+    data = st_jitter(stations_sf),
+    aes(color = expedition2),
+    size = 0.5,
+    show.legend = FALSE
   ) +
-  facet_wrap(~ glue("Leg {expedition}")) +
+  paletteer::scale_color_paletteer_d(
+    "suffrager::london",
+    labels = function(x) {
+      paste("Leg", x)
+    },
+    guide = guide_legend(
+      title = element_blank(),
+      override.aes = list(size = 3),
+      label.theme = element_text(family = "Montserrat"),
+      order = 1
+    )
+  ) +
+  paletteer::scale_fill_paletteer_c(
+    "pals::kovesi.linear_blue_95_50_c20",
+    # direction = -1,
+    labels = scales::label_percent(),
+    guide = guide_colorbar(
+      # label.position = "top",
+      title.position = "top",
+      title = "Sea ice concentration",
+      title.theme = element_text(hjust = 0.5, family = "Montserrat", size = 6),
+      label.theme = element_text(family = "Montserrat", size = 5),
+      barwidth = unit(3, "cm"),
+      barheight = unit(0.1, "cm"),
+      override.aes = list(color = "#3c3c3c", size = 0.25),
+      nrow = 1,
+      direction = "horizontal"
+    )
+  ) +
   coord_sf(
     xlim = c(-140, -130),
     ylim = c(68, 70.5),
     expand = TRUE
   ) +
-  labs(
-    color = "Salinity"
-  ) +
+  facet_wrap(~expedition2) +
   theme(
     panel.grid = element_blank(),
     panel.border = element_blank(),
-    legend.justification = c(0, 1),
-    legend.position = c(0.01, 0.99),
+    legend.justification = c(0, 0),
+    legend.position = c(0.01, 0.05),
     legend.background = element_blank(),
-    legend.direction = "horizontal",
-    strip.text = element_text(size = 14, face = "bold"),
+    strip.text = element_text(hjust = 0, size = 14, face = "bold"),
     strip.background = element_blank(),
     axis.ticks = element_blank(),
     axis.title = element_blank(),
