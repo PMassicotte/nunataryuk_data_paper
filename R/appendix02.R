@@ -71,7 +71,7 @@ p <- df %>%
     )
   ) +
   labs(
-    x = quote("a + bb" ~ (m^{-1})),
+    x = quote(italic(a) ~ "+" ~ italic(b[b]) ~ (m^{-1})),
     y = "Shading",
     shape = "Volume scattering function",
     color = "Sun zenith angle"
