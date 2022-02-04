@@ -11,8 +11,8 @@ df <- read_csv2(here("data", "raw", "IceProShading.csv")) %>%
   janitor::clean_names() %>%
   type_convert() %>%
   mutate(ff = case_when(
-    ff == 4 ~ "FF 400",
-    ff == 183 ~ "FF 183"
+    ff == 4 ~ "FF 4.00%",
+    ff == 183 ~ "FF 1.83%"
   ))
 
 df
