@@ -1,5 +1,16 @@
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+# AUTHOR:       Philippe Massicotte
+#
+# DESCRIPTION:  Showing the relationship (linear model) used to calibrate the
+# CTD depth sensor from atmospheric pressure downloaded from Environment Canada.
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+rm(list = ls())
+
+# Data given/extracted by Guislain
+
 df <- read_csv(
-  here("~", "Downloads", "Nunataryuk_depth_tare.csv"),
+  here("data", "raw", "Nunataryuk_depth_tare.csv"),
   name_repair = janitor::make_clean_names
 )
 
@@ -44,16 +55,8 @@ df %>%
   )
 
 ggsave(
-  "~/Desktop/appendix03.pdf",
+  here("graphs", "appendix03.pdf"),
   device = cairo_pdf,
-  width = 120,
-  height = 90,
-  units = "mm"
-)
-
-ggsave(
-  "~/Desktop/appendix03.png",
-  dpi = 300,
   width = 120,
   height = 90,
   units = "mm"
