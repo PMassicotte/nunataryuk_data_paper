@@ -27,6 +27,9 @@ library(patchwork)
 # renv::install("MilesMcBain/breakerofchains")
 # renv::install("mcguinlu/pathformatr")
 
+# renv::install("ropensci/rnaturalearthdata")
+# renv::install("ropensci/rnaturalearthhires")
+
 # Set default ggplot2 font size and font family
 # devtools::install_github("PMassicotte/ggpmthemes")
 theme_set(theme_light_modified(base_family = "Montserrat", base_size = 10))
