@@ -37,7 +37,7 @@ p1 <- df %>%
 # Total bacterial abundance -----------------------------------------------
 
 p2 <- df %>%
-  # filter(bacteria_cells_m_l >= 3e5) %>%
+  filter(bacteria_cells_m_l >= 1e5) %>%
   ggplot(aes(x = factor(expedition), y = bacteria_cells_m_l, fill = factor(expedition))) +
   geom_boxplot(size = 0.1, outlier.size = 0.1) +
   annotation_logticks(sides = "l", size = 0.1) +
