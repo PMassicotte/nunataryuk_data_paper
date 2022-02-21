@@ -6,71 +6,207 @@
 
 rm(list = ls())
 
-df <- read_csv(here("data", "clean", "merged_data.csv"))
+# Read the raw pigment file -----------------------------------------------
 
-df
+# I am using this file because the limit of detection was identified with the
+# value of -8888. I will consider this value as 0 in the calculations.
 
-# Select 2-3 stations that were present in all legs -----------------------
+pigments <-
+  read_csv(here(
+    "data",
+    "raw",
+    "NUNA2019_HPLC_final_2021_01_23.xlsx - DATA.csv"
+  )) %>%
+  janitor::clean_names() %>%
+  replace(. == -8888, 0)
 
-df <- df %>%
-  # select(expedition, sample_id) %>%
-  mutate(station = str_remove(sample_id, "\\d_"), .after = sample_id) %>%
-  add_count(station, sort = TRUE) %>%
+# Keep stations that were present in the 4 legs but also with measured pigments
+# (i.e. the sum of the selected pigment is not 0).
+
+df_viz <- pigments %>%
+  select(
+    station_name,
+    cruise,
+    long_decdeg,
+    lat_decdeg,
+    tot_chl_a_mg_per_m_3,
+    tot_chl_b_mg_per_m_3,
+    tot_chl_c_mg_per_m_3,
+    psc_mg_per_m_3 = psc,
+    allo_mg_per_m_3,
+    diadino_mg_per_m_3,
+    zea_mg_per_m_3
+  ) %>%
+  drop_na(cruise) %>%
+  rowwise() %>%
+  mutate(total_pigment = sum(c_across(
+    -c(station_name, cruise, long_decdeg, lat_decdeg)
+  ), na.rm = TRUE)) %>%
+  ungroup() %>%
+  filter(total_pigment != 0) %>%
+  add_count(station_name) %>%
   filter(n == 4)
 
-df
+stations <- c("STN340alt", "STN350", "STN360")
 
-p1 <- df %>%
-  ggplot(aes(x = expedition, y = sal_ctd)) +
-  geom_col() +
-  facet_wrap(~station)
+df_viz %>%
+  ggplot(aes(long_decdeg, lat_decdeg, color = factor(cruise))) +
+  geom_point() +
+  geom_text(aes(label = station_name),
+    check_overlap = FALSE,
+    show.legend = FALSE
+  ) +
+  facet_wrap(~cruise, scales = "free")
 
-p2 <- df %>%
-  distinct(station, .keep_all = TRUE) %>%
-  st_as_sf(coords = c("longitude_dec_deg", "latitude_dec_deg"), crs = 4326) %>%
-  ggplot() +
-  geom_sf() +
-  geom_sf_text(aes(label = station), check_overlap = FALSE)
+stations <- c("STN350", "STN360", "STN150alt")
 
-p1 / p2
+df_viz <- df_viz %>%
+  filter(station_name %in% stations)
 
-# Following a discussion with Martine, we are going with the 300 line
-
-df_viz <- df %>%
-  filter(station %in% c("STN340alt", "STN350", "STN360"))
+df_viz %>%
+  distinct(station_name)
 
 # Select pigments ---------------------------------------------------------
 
-names(df)
+names(df_viz)
 
 df_viz <- df_viz %>%
   select(
-    station,
-    expedition,
-    chl_a_mg_m3,
-    chl_b_mg_m3,
-    chl_c_mg_m3,
-    psc_mg_m3,
-    allo_mg_m3,
-    diadino_mg_m3,
-    zea_mg_m3
+    station_name,
+    cruise,
+    tot_chl_a_mg_per_m_3,
+    tot_chl_b_mg_per_m_3,
+    tot_chl_c_mg_per_m_3,
+    psc_mg_per_m_3,
+    allo_mg_per_m_3,
+    diadino_mg_per_m_3,
+    zea_mg_per_m_3
   )
 
 df_viz <- df_viz %>%
   mutate(
-    npc_mg_m3 = allo_mg_m3 + diadino_mg_m3 + zea_mg_m3,
+    npc_mg_per_m_3 = allo_mg_per_m_3 + diadino_mg_per_m_3 + zea_mg_per_m_3,
     .keep = "unused"
   ) %>%
   rowwise() %>%
-  mutate(total_pigment = sum(c_across(-c(station, expedition)), na.rm = TRUE)) %>%
-  filter(total_pigment > 0) %>%
-  mutate(across(-c(station, expedition, total_pigment), ~.x / total_pigment)) %>%
-  replace(is.na(.), 0)
+  mutate(total_pigment = sum(c_across(-c(
+    station_name, cruise
+  )), na.rm = TRUE)) %>%
+  mutate(across(-c(station_name, cruise, total_pigment), ~ .x / total_pigment)) %>%
+  mutate(total_percentage = sum(c_across(-c(
+    station_name, cruise, total_pigment
+  )), na.rm = TRUE))
 
-# Plot --------------------------------------------------------------------
+df_viz
 
-df_viz %>%
-  pivot_longer(contains("mg_m3")) %>%
-  ggplot(aes(x = expedition, y = value, fill = name)) +
+
+# Pigments plot -----------------------------------------------------------
+
+p1 <- df_viz %>%
+  mutate(station_name = factor(station_name,
+    levels = c("STN150alt", "STN360", "STN350")
+  )) %>%
+  pivot_longer(contains("mg_per_m_3")) %>%
+  ggplot(aes(x = cruise, y = value, fill = name)) +
   geom_col() +
-  facet_wrap(~station)
+  scale_fill_viridis_d(
+    breaks = c(
+      "npc_mg_per_m_3",
+      "psc_mg_per_m_3",
+      "tot_chl_a_mg_per_m_3",
+      "tot_chl_b_mg_per_m_3",
+      "tot_chl_c_mg_per_m_3"
+    ),
+    labels = c(
+      parse(text = "NPC~(mg~m^{-3})"),
+      parse(text = "PSC~(mg~m^{-3})"),
+      parse(text = "Total~'Chl-a'~(mg~m^{-3})"),
+      parse(text = "Total~'Chl-b'~(mg~m^{-3})"),
+      parse(text = "Total~'Chl-c'~(mg~m^{-3})")
+    ),
+    guide = guide_legend(
+      label.position = "top",
+      label.theme = element_text(size = 6, family = "Montserrat"),
+      keywidth = unit(2, "cm"),
+      keyheight = unit(0.25, "cm")
+    )
+  ) +
+  scale_x_continuous(labels = ~ paste("Leg", .), expand = c(0, 0)) +
+  scale_y_continuous(labels = scales::label_percent(), expand = c(0, 0)) +
+  labs(
+    x = NULL,
+    y = "Pigment proportion"
+  ) +
+  facet_wrap(~station_name, ncol = 2) +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    panel.grid = element_blank()
+  )
+
+# Map overview ------------------------------------------------------------
+
+stations_sf <- pigments %>%
+  filter(station_name %in% stations) %>%
+  select(station_name, long_decdeg, lat_decdeg) %>%
+  distinct(station_name, .keep_all = TRUE) %>%
+  st_as_sf(coords = c("long_decdeg", "lat_decdeg"), crs = 4326)
+
+stations_sf
+
+# crsuggest::suggest_crs(stations_sf)
+
+stations_sf <- stations_sf %>%
+  st_transform(6111)
+
+stations_label <- tibble(
+  station_name = c("STN360", "STN150alt", "STN350"),
+  longitude = c(-136, -137.5, -136.85),
+  latitude = c(69.03, 68.97, 69.25)
+) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
+  st_transform(6111)
+
+wm <- rnaturalearth::ne_coastline(scale = "large", returnclass = "sf") %>%
+  st_crop(xmin = -138, xmax = -134, ymin = 68, ymax = 70) %>%
+  st_transform(6111)
+
+sp <- tibble(name = "Shingle point", longitude = -136.8, latitude = 68.8) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
+  st_transform(6111)
+
+p2 <- ggplot() +
+  geom_sf(data = wm, size = 0.1) +
+  geom_sf(data = stations_sf, size = 1) +
+  geom_sf_text(
+    data = stations_label,
+    aes(label = station_name),
+    vjust = 2.2,
+    size = 2
+  ) +
+  geom_sf_text(data = sp, aes(label = name), vjust = 2, size = 2) +
+  geom_sf(
+    data = sp,
+    pch = 18,
+    size = 2,
+    color = "#007d57"
+  ) +
+  labs(
+    x = NULL,
+    y = NULL
+  ) +
+  theme(
+    axis.text = element_text(size = 4),
+    panel.grid = element_line(size = 0.2)
+  )
+
+p <- p1 +
+  annotation_custom(ggplotGrob(p2), xmin = 4.5, xmax = 8.4, ymin = -0.1, ymax = 1)
+
+ggsave(
+  here("graphs", "fig11.pdf"),
+  device = cairo_pdf,
+  width = 140,
+  height = 140,
+  units = "mm"
+)
