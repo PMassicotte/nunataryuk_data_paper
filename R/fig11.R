@@ -161,8 +161,8 @@ stations_sf <- stations_sf %>%
 
 stations_label <- tibble(
   station_name = c("STN360", "STN150alt", "STN350"),
-  longitude = c(-136, -137.5, -136.85),
-  latitude = c(69.03, 68.97, 69.25)
+  longitude = c(-136.05, -136.9, -136.85),
+  latitude = c(69.08, 68.97, 69.25)
 ) %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
   st_transform(6111)
@@ -171,12 +171,12 @@ wm <- rnaturalearth::ne_coastline(scale = "large", returnclass = "sf") %>%
   st_crop(xmin = -138, xmax = -134, ymin = 68, ymax = 70) %>%
   st_transform(6111)
 
-sp <- tibble(name = "Shingle point", longitude = -136.8, latitude = 68.8) %>%
+sp <- tibble(name = "Shingle\npoint", longitude = -137.345, latitude = 68.9891) %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
   st_transform(6111)
 
 p2 <- ggplot() +
-  geom_sf(data = wm, size = 0.1) +
+  geom_sf(data = wm, size = 0.1, color = "grey40") +
   geom_sf(data = stations_sf, size = 1) +
   geom_sf_text(
     data = stations_label,
@@ -184,7 +184,14 @@ p2 <- ggplot() +
     vjust = 2.2,
     size = 2
   ) +
-  geom_sf_text(data = sp, aes(label = name), vjust = 2, size = 2) +
+  geom_sf_text(
+    data = sp,
+    aes(label = name),
+    vjust = -0.3,
+    hjust = 1.2,
+    size = 2,
+    family = "Exo"
+  ) +
   geom_sf(
     data = sp,
     pch = 18,
