@@ -19,6 +19,8 @@ library(MBA)
 library(ggspatial)
 library(data.table)
 library(patchwork)
+library(ggrepel)
+
 # library(googlesheets4)
 
 # library(furrr)
@@ -31,7 +33,7 @@ library(patchwork)
 # renv::install("ropensci/rnaturalearthhires")
 
 # Set default ggplot2 font size and font family
-# devtools::install_github("PMassicotte/ggpmthemes")
+# renv::install("PMassicotte/ggpmthemes")
 theme_set(theme_light_modified(base_family = "Montserrat", base_size = 10))
 
 theme_update(

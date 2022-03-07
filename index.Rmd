@@ -88,6 +88,12 @@ knitr::include_graphics(pdf2png(here::here("graphs", "fig10.pdf")))
 knitr::include_graphics(pdf2png(here::here("graphs", "fig11.pdf")))
 ```
 
+---
+
+```{r}
+knitr::include_graphics(pdf2png(here::here("graphs", "fig12.pdf")))
+```
+
 ## Appendix
 
 ---
