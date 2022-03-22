@@ -20,6 +20,9 @@ library(ggspatial)
 library(data.table)
 library(patchwork)
 library(ggrepel)
+library(MetBrewer) # For color palettes
+library(GGally)
+library(emojifont)
 
 # library(googlesheets4)
 

@@ -132,7 +132,8 @@ poi <- tibble(
     "Beaufort Sea",
     "Shingle Point"
   )
-)
+) %>%
+  mutate(label = "\uf041")
 
 p1 <- ggplot() +
   ggisoband::geom_isobands(
@@ -186,12 +187,12 @@ p1 <- ggplot() +
     aes(color = factor(expedition)),
     size = 1.5
   ) +
-  geom_point(
+  geom_text(
     data = poi,
-    aes(x = longitude, y = latitude),
-    pch = 18,
-    size = 3,
-    color = "#007d57"
+    aes(x = longitude, y = latitude, label = label),
+    size = 4,
+    color = "#007d57",
+    family = "fontawesome-webfont"
   ) +
   geom_text(
     data = poi,

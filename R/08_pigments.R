@@ -47,9 +47,6 @@ df_viz <- df %>%
 
 # test --------------------------------------------------------------------
 
-
-library(GGally)
-
 p <- df_viz %>%
   select(-c(sample_id)) %>%
   mutate(across(-expedition, log10)) %>%

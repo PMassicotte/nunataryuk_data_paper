@@ -99,7 +99,6 @@ df_viz <- df_viz %>%
 
 df_viz
 
-
 # Pigments plot -----------------------------------------------------------
 
 p1 <- df_viz %>%
@@ -175,6 +174,11 @@ sp <- tibble(name = "Shingle\npoint", longitude = -137.345, latitude = 68.9891) 
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
   st_transform(6111)
 
+poi <- sp %>%
+  st_coordinates() %>%
+  as_tibble() %>%
+  mutate(label = "\uf041")
+
 p2 <- ggplot() +
   geom_sf(data = wm, size = 0.1, color = "grey40") +
   geom_sf(data = stations_sf, size = 1) +
@@ -192,11 +196,12 @@ p2 <- ggplot() +
     size = 2,
     family = "Exo"
   ) +
-  geom_sf(
-    data = sp,
-    pch = 18,
-    size = 2,
-    color = "#007d57"
+  geom_text(
+    data = poi,
+    aes(x = X, y = Y, label = label),
+    size = 4,
+    color = "#007d57",
+    family = "fontawesome-webfont"
   ) +
   labs(
     x = NULL,

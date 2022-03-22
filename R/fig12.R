@@ -143,7 +143,8 @@ poi <- tibble(
     "Beaufort Sea",
     "Shingle Point"
   )
-)
+) %>%
+  mutate(label = "\uf041")
 
 # Seed for ggrepel
 set.seed(3245)
@@ -220,12 +221,12 @@ p <- ggplot() +
     max.time = 2,
     show.legend = FALSE
   ) +
-  geom_point(
+  geom_text(
     data = poi,
-    aes(x = longitude, y = latitude),
-    pch = 18,
-    size = 3,
-    color = "#007d57"
+    aes(x = longitude, y = latitude, label = label),
+    size = 4,
+    color = "#007d57",
+    family = "fontawesome-webfont"
   ) +
   geom_label(
     data = poi,
