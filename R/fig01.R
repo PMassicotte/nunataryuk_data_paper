@@ -41,7 +41,7 @@ river_network <-
   st_crop(c(
     xmin = -141,
     xmax = -130,
-    ymin = 68,
+    ymin = 67,
     ymax = 70
   )) %>%
   st_transform(st_crs(wm))
@@ -86,7 +86,8 @@ poi <- tibble(
     -137.1,
     -133.7723,
     -137,
-    -137.345
+    -137.345,
+    -133.74
   ),
   latitude = c(
     68.3498600,
@@ -97,7 +98,8 @@ poi <- tibble(
     69.1,
     69.4167,
     69.7,
-    68.9891
+    68.9891,
+    67.45
   ),
   longitude_label = c(
     -133.4,
@@ -108,7 +110,8 @@ poi <- tibble(
     -137.8,
     -134.25,
     -137,
-    -136.8
+    -137.75,
+    -133.74
   ),
   latitude_label = c(
     68.3498600,
@@ -119,7 +122,8 @@ poi <- tibble(
     69.25,
     69.4167,
     69.75,
-    68.8
+    68.85,
+    67.55
   ),
   place = c(
     "Inuvik",
@@ -130,10 +134,13 @@ poi <- tibble(
     "Mackenzie Bay",
     "Kittigazuit\nBay",
     "Beaufort Sea",
-    "Shingle Point"
+    "Shingle Point",
+    "Hydrometric station\nArctic Red River"
   )
 ) %>%
   mutate(label = "\uf041")
+
+# Zoom in map -------------------------------------------------------------
 
 p1 <- ggplot() +
   ggisoband::geom_isobands(
@@ -222,10 +229,10 @@ p1 <- ggplot() +
   ) +
   annotate(
     "curve",
-    x = -137.1,
-    xend = -137.3,
-    y = 68.825,
-    yend = 68.95,
+    x = -137.8,
+    xend = -137.45,
+    y = 68.9,
+    yend = 68.99,
     curvature = -0.3,
     size = 0.25,
     arrow = ggplot2::arrow(length = unit(0.05, "inch"))
@@ -253,7 +260,7 @@ p1 <- ggplot() +
   ) +
   coord_sf(
     xlim = c(-140, -132.5),
-    ylim = c(68, 70),
+    ylim = c(67.25, 70),
     expand = FALSE
   ) +
   theme(
@@ -268,7 +275,7 @@ p1 <- ggplot() +
     legend.key.size = unit(0.25, "cm"),
     legend.margin = margin(t = 0, unit = "cm"),
     legend.direction = "horizontal",
-    legend.position = c(0.01, 0.45),
+    legend.position = c(0.01, 0.38),
     legend.justification = c(0, 0),
     legend.background = element_rect(fill = "transparent")
   )
@@ -278,10 +285,16 @@ p1 <- ggplot() +
 bbox <- c(xmin = -180, xmax = 0, ymin = 30, ymax = 90)
 
 canada <- rnaturalearth::ne_countries(returnclass = "sf", scale = "large") %>%
-  st_crop(bbox)
+  st_crop(bbox) %>%
+  filter(name_en != "Canada")
 
 provinces <- rnaturalearth::ne_states(country = "canada", returnclass = "sf") %>%
   st_transform(3979)
+
+unique(provinces$name_en)
+
+nwt_yukon <- provinces %>%
+  filter(name_en %in% c("Yukon", "Northwest Territories"))
 
 # crsuggest::suggest_crs(canada)
 
@@ -291,22 +304,24 @@ bbox_nsidc <- canada %>%
   st_transform(3979) %>%
   st_bbox()
 
-map_bbox <- st_bbox(c(xmin = -140, xmax = -132, ymin = 68, ymax = 70), crs = 4326) %>%
+map_bbox <- st_bbox(c(xmin = -140, xmax = -132, ymin = 67.25, ymax = 70), crs = 4326) %>%
   st_as_sfc() %>%
   st_transform(3979)
 
 locations <- tibble(
-  country = c("Canada", "USA", "Greenland", "Arctic Ocean"),
-  longitude = c(-115, -120, -40, -150),
-  latitude = c(58, 46, 75, 80)
+  label = c("Canada", "USA", "Greenland", "Arctic Ocean", "Yukon", "NWT"),
+  longitude = c(-115, -120, -40, -150, -136.2, -118),
+  latitude = c(58, 46, 75, 80, 62, 63.4)
 ) %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
   st_transform(3979)
 
 p2 <- canada %>%
+  st_difference(st_transform(provinces, st_crs(canada))) %>%
   ggplot() +
   geom_sf(size = 0.1) +
   geom_sf(data = provinces, size = 0.1) +
+  geom_sf(data = nwt_yukon, size = 0.2, color = "#3c3c3c", fill = NA) +
   geom_sf(
     data = map_bbox,
     fill = NA,
@@ -315,7 +330,7 @@ p2 <- canada %>%
   ) +
   geom_sf_text(
     data = locations,
-    aes(label = country),
+    aes(label = label),
     size = 2,
     family = "Montserrat",
     fontface = "bold"
@@ -334,11 +349,10 @@ p2 <- canada %>%
     axis.ticks = element_blank()
   )
 
-
 # Combine -----------------------------------------------------------------
 
 p1 <- p1 +
-  annotation_custom(ggplotGrob(p2), xmin = -139.9, xmax = -137.5, ymin = 68, ymax = 68.9)
+  annotation_custom(ggplotGrob(p2), xmin = -139.9, xmax = -137, ymin = 66.6, ymax = 68.9)
 
 # Save --------------------------------------------------------------------
 
