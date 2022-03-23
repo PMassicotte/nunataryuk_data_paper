@@ -139,7 +139,12 @@ p <- sic %>%
   geom_sf(data = wm, size = 0.01) +
   geom_sf(data = river_network, size = 0.1, color = "gray50") +
   geom_sf(
-    data = st_jitter(stations_sf),
+    data = stations_sf,
+    size = 0.7,
+    show.legend = FALSE
+  ) +
+  geom_sf(
+    data = stations_sf,
     aes(color = expedition2),
     size = 0.5,
     show.legend = FALSE
@@ -160,14 +165,14 @@ p <- sic %>%
     "pals::kovesi.linear_blue_95_50_c20",
     # direction = -1,
     labels = scales::label_percent(),
-    guide = guide_colorbar(
-      # label.position = "top",
+    guide = guide_legend(
+      label.position = "top",
       title.position = "top",
       title = "Sea ice concentration",
       title.theme = element_text(hjust = 0.5, family = "Montserrat", size = 6),
       label.theme = element_text(family = "Montserrat", size = 5),
-      barwidth = unit(3, "cm"),
-      barheight = unit(0.1, "cm"),
+      keyidth = unit(3, "cm"),
+      keyheight = unit(0.2, "cm"),
       override.aes = list(color = "#3c3c3c", size = 0.25),
       nrow = 1,
       direction = "horizontal"
@@ -183,7 +188,7 @@ p <- sic %>%
     panel.grid = element_blank(),
     panel.border = element_blank(),
     legend.justification = c(0, 0),
-    legend.position = c(0.01, 0.05),
+    legend.position = c(0.01, 0.0),
     legend.background = element_blank(),
     strip.text = element_text(hjust = 0, size = 14, face = "bold"),
     strip.background = element_blank(),
