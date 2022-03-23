@@ -74,7 +74,8 @@ river_network <-
 p <- ggplot() +
   geom_sf(data = wm, size = 0.01) +
   geom_sf(data = river_network, size = 0.1, color = "gray50") +
-  geom_sf(data = df_sf, aes(color = sal_ctd), size = 1) +
+  geom_sf(data = df_sf, size = 0.7) +
+  geom_sf(data = df_sf, aes(color = sal_ctd), size = 0.5) +
   scale_color_viridis_c(
     option = "C",
     trans = "log10",
