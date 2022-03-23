@@ -47,7 +47,7 @@ df_viz <- pigments %>%
   add_count(station_name) %>%
   filter(n == 4)
 
-stations <- c("STN340alt", "STN350", "STN360")
+# stations <- c("STN340alt", "STN350", "STN360")
 
 df_viz %>%
   ggplot(aes(long_decdeg, lat_decdeg, color = factor(cruise))) +
