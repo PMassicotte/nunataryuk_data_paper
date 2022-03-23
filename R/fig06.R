@@ -27,7 +27,8 @@ df_viz <- df %>%
     poc_mug_ml,
     a_p443_1_m
   ) %>%
-  mutate(suva350 = a_cdom350_1_m / doc_mg_l)
+  # Converting absorption to absorbance
+  mutate(suva350 = (a_cdom350_1_m / 2.303) / doc_mg_l)
 
 # Boxplots ----------------------------------------------------------------
 
