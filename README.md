@@ -28,6 +28,8 @@ The actual data can be found below:
 
 All the data used to to produce the graphics included in this data paper can be found in the [latest release](https://github.com/PMassicotte/nunataryuk_data_paper/releases). Just download the `data.zip` and unzip the content in the the `data/` project folder. The `raw/` folder contains the raw data that can be found on Pangaea website (see above) whereas the `clean/` folder contains the data that were further processed in this project to make graphs and analysis. 
 
+**IMPORTANT**: Do not update the `Rttf2pt1` package or [you will have problems](https://github.com/wch/extrafont/issues/88) with using font in the graphs.
+
 ## Citing
 
 This repository as a [DOI](https://zenodo.org/account/settings/github/repository/PMassicotte/nunataryuk_data_paper) that can be used for citation. 

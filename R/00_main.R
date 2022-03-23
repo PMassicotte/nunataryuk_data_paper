@@ -36,8 +36,12 @@ library(emojifont)
 # renv::install("ropensci/rnaturalearthhires")
 
 # Set default ggplot2 font size and font family
+library(showtext)
+font_add_google("Montserrat", "Montserrat")
+
 # renv::install("PMassicotte/ggpmthemes")
-theme_set(theme_light_modified(base_family = "Montserrat", base_size = 10))
+# ggpmthemes::import_montserrat()
+theme_set(theme_montserrat(base_size = 10))
 
 theme_update(
   strip.background = element_blank(),
