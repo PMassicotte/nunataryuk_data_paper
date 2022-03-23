@@ -160,8 +160,8 @@ stations_sf <- stations_sf %>%
 
 stations_label <- tibble(
   station_name = c("STN360", "STN150alt", "STN350"),
-  longitude = c(-136.05, -136.9, -136.85),
-  latitude = c(69.08, 68.97, 69.25)
+  longitude = c(-136.28, -136.9, -136.85),
+  latitude = c(69.08, 68.97, 69.22)
 ) %>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
   st_transform(6111)
@@ -186,7 +186,8 @@ p2 <- ggplot() +
     data = stations_label,
     aes(label = station_name),
     vjust = 2.2,
-    size = 2
+    hjust = 0.1,
+    size = 1.5
   ) +
   geom_sf_text(
     data = sp,
@@ -194,7 +195,8 @@ p2 <- ggplot() +
     vjust = -0.3,
     hjust = 1.2,
     size = 2,
-    family = "Exo"
+    family = "Montserrat",
+    fontface = "bold"
   ) +
   geom_text(
     data = poi,
