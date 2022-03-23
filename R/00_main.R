@@ -38,6 +38,9 @@ library(emojifont)
 # Set default ggplot2 font size and font family
 library(showtext)
 font_add_google("Montserrat", "Montserrat")
+font_add_google("Montserrat", "Montserrat Light", regular.wt = 200)
+font_add_google("Exo", "Exo")
+showtext_auto()
 
 # renv::install("PMassicotte/ggpmthemes")
 # ggpmthemes::import_montserrat()

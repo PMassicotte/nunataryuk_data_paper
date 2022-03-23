@@ -117,7 +117,7 @@ poi <- tibble(
     -134,
     -134.9,
     -137.8,
-    -134.3,
+    -134.35,
     -137,
     -137.75
   ),
@@ -128,8 +128,8 @@ poi <- tibble(
     69.8,
     68.78,
     69.25,
-    69.46,
-    69.75,
+    69.42,
+    69.78,
     68.85
   ),
   place = c(
@@ -199,6 +199,13 @@ p <- ggplot() +
     aes(color = leg),
     size = 0.5
   ) +
+  geom_text(
+    data = poi,
+    aes(x = longitude, y = latitude, label = label),
+    size = 4,
+    color = "#007d57",
+    family = "fontawesome-webfont"
+  ) +
   ggrepel::geom_label_repel(
     data = stations,
     aes(
@@ -215,18 +222,11 @@ p <- ggplot() +
     size = 2,
     hjust = 1,
     fontface = "bold",
-    family = "Montserrat Light",
+    # family = "Montserrat Light",
     segment.size = unit(0.1, "mm"),
     max.iter = Inf,
     max.time = 2,
     show.legend = FALSE
-  ) +
-  geom_text(
-    data = poi,
-    aes(x = longitude, y = latitude, label = label),
-    size = 4,
-    color = "#007d57",
-    family = "fontawesome-webfont"
   ) +
   geom_label(
     data = poi,
