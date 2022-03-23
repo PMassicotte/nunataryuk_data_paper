@@ -135,7 +135,7 @@ poi <- tibble(
     "Kittigazuit\nBay",
     "Beaufort Sea",
     "Shingle Point",
-    "Hydrometric station\nArctic Red River"
+    "Hydrometric station (10LC014)\nArctic Red River"
   )
 ) %>%
   mutate(label = "\uf041")
@@ -367,3 +367,4 @@ ggsave(
 )
 
 knitr::plot_crop(filename)
+
