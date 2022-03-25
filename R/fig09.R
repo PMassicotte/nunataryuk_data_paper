@@ -44,7 +44,7 @@ p2 <- df %>%
   scale_x_discrete(labels = function(x) {
     glue("Leg {x}")
   }) +
-  scale_y_log10(labels = scales::label_number_si()) +
+  scale_y_log10() +
   paletteer::scale_fill_paletteer_d("suffrager::london", ) +
   labs(
     x = NULL,
