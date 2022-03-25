@@ -74,7 +74,7 @@ p1 <- discharge %>%
   scale_x_date(expand = expansion(mult = c(0.01, 0.1))) +
   labs(
     x = NULL,
-    y = quote("Discharge" ~ (m^3 ~ sec^{-1}))
+    y = quote("Discharge" ~ (m^3 ~ s^{-1}))
   ) +
   theme(
     panel.border = element_blank(),
