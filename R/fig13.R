@@ -1,39 +1,57 @@
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # AUTHOR:       Philippe Massicotte
 #
-# DESCRIPTION:  EEMs fluorescence collected by Gwen.
+# DESCRIPTION:  EEMs fluorescence collected by Gwen. The shapefiles for the Tuk
+# area are from https://www.geogratis.gc.ca/.
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 rm(list = ls())
 
-files <- fs::dir_ls(here("data", "raw", "fluorescence_3d_gw_Nuna"), glob = "*f.csv")
+eems <- eem_read(here("data/raw/fluorescence_3d_gw_Nuna/eems/"), import_function = "cary")
 
-ex <- read_lines(files[2], n_max = 1) %>%
-  str_split(",") %>%
-  unlist() %>%
-  .[str_detect(., "^2019")] %>%
-  str_match(., "EX_(\\d{3})") %>%
-  .[, 2] |>
-  parse_number()
+eems <- eems %>%
+  eem_remove_blank() %>%
+  eem_raman_normalisation() %>%
+  # eem_remove_scattering(type = "raman") %>%
+  eem_remove_scattering(type = "rayleigh") %>%
+  eem_remove_scattering(type = "rayleigh", 2) %>%
+  eem_extract(1, keep = FALSE)
 
-eem <- read_csv(files[2], skip = 1)
+eems <- map_df(eems, function(eem) {
 
-# Remove duplicated columns
-eem <- eem[!duplicated(as.list(eem))] %>%
-  janitor::remove_empty("cols") %>%
-  set_names(c(names(.)[1], ex)) |>
-  pivot_longer(
-    matches("\\d{3}"),
-    names_to = "ex",
-    values_to = "fluorescence",
-    names_transform = list(ex = parse_number)
-  ) |>
-  rename(em = 1)
+  eem$x %>%
+    as_tibble() %>%
+    mutate(em = eem$em, .before = 1) %>%
+    set_names(c("em", eem$ex)) %>%
+    pivot_longer(
+      -em,
+      names_to = "ex",
+      values_to = "fluorescence",
+      names_transform = list(ex = parse_number)
+    ) %>%
+    mutate(sample = eem$sample)
+})
 
-eem
+eems
 
-p1 <- eem %>%
-  # mutate(fluorescence = ifelse(fluorescence < 0, 0, fluorescence)) %>%
+range(eems$fluorescence, na.rm = TRUE)
+
+eems <- eems %>%
+  mutate(sample = str_match(sample, "(\\d{2})f")[, 2]) %>%
+  mutate(sample = parse_number(sample)) %>%
+  mutate(sample = glue("Station {sample}"))
+
+# Re-order north -> south
+eems <- eems %>%
+  mutate(sample = factor(
+    sample,
+    levels = c("Station 18", "Station 17", "Station 15", "Station 7", "Station 4")
+  ))
+
+
+p1 <- eems %>%
+  mutate(fluorescence = ifelse(fluorescence < 0, 0, fluorescence)) %>%
+  # filter(sample == "tuk2019_1004f_csv") %>%
   ggplot(aes(
     x = ex,
     y = em,
@@ -41,11 +59,10 @@ p1 <- eem %>%
     z = fluorescence
   )) +
   ggisoband::geom_isobands(bins = 10, size = 0.1) +
-  scale_x_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = 6)) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0.2)), breaks = scales::pretty_breaks(n = 6)) +
   scale_y_continuous(expand = c(0, 0), breaks = scales::pretty_breaks(n = 4)) +
   scale_fill_gradientn(
     colors = MetBrewer::met.brewer("Tam", 6, type = "continuous"),
-    # trans = "sqrt"
     guide = guide_colorbar(
       title = "Fluorescence (R.U.)",
       title.position = "top",
@@ -57,85 +74,104 @@ p1 <- eem %>%
   ) +
   labs(
     x = "Excitation (nm)",
-    y = "Emission (nm)",
-    title = "Station xxx"
+    y = "Emission (nm)"
   ) +
-  # coord_equal(ratio = 0.5) +
+  facet_wrap(~sample, ncol = 2) +
   theme_minimal() +
   theme(
     text = element_text(family = "Montserrat"),
     panel.grid = element_blank(),
     legend.justification = c(0, 0),
-    legend.position = c(0.52, 0),
+    legend.position = c(0.17, 0),
     legend.direction = "horizontal"
   )
 
+p1
+
 # Map overview ------------------------------------------------------------
 
-pigments <-
-  read_csv(here(
-    "data",
-    "raw",
-    "NUNA2019_HPLC_final_2021_01_23.xlsx - DATA.csv"
-  )) %>%
+stations <-
+
+  stations <-
+  readxl::read_excel(here("data/raw/fluorescence_3d_gw_Nuna/Sample_ID.xlsx"),
+                     skip = 1
+  ) %>%
   janitor::clean_names() %>%
-  replace(. == -8888, 0)
+  filter(
+    number_samples %in% c(
+      "Tuk2019-1004",
+      "Tuk2019-1007",
+      "Tuk2019-1015",
+      "Tuk2019-1017",
+      "Tuk2019-1018"
+    )
+  ) %>%
+  mutate(longitude_w = -longitude_w) %>%
+  mutate(sample = str_extract(number_samples, "\\d{2}$")) %>%
+  mutate(sample = parse_number(sample))
 
-stations <- c("STN350", "STN360", "STN150alt")
+stations
 
-stations_sf <- pigments %>%
-  filter(station_name %in% stations) %>%
-  select(station_name, long_decdeg, lat_decdeg) %>%
-  distinct(station_name, .keep_all = TRUE) %>%
-  st_as_sf(coords = c("long_decdeg", "lat_decdeg"), crs = 4326)
+stations_sf <- stations %>%
+  st_as_sf(coords = c("longitude_w", "latitude_n"), crs = 4326)
 
-stations_sf
-plot(stations_sf)
+bbox <- c(xmin = -135, ymin = 75, xmax = -130, ymax = 65)
 
-# crsuggest::suggest_crs(stations_sf)
+water <-
+  st_read(
+    here(
+      "data",
+      "raw",
+      "tuktoyaktuk_shapefiles",
+      "bndt_107c07_shp_en",
+      "107C07_water_b_a.shp"
+    )
+  ) %>%
+  bind_rows(st_read(
+    here(
+      "data",
+      "raw",
+      "tuktoyaktuk_shapefiles",
+      "bndt_107c08_shp_en",
+      "107C08_water_b_a.shp"
+    )
+  )) %>%
+  st_union() %>%
+  st_crop(bbox)
 
 stations_sf <- stations_sf %>%
-  st_transform(6111)
+  st_transform(st_crs(water))
 
-stations_label <- tibble(
-  station_name = c("STN360", "STN150alt", "STN350"),
-  longitude = c(-136.28, -136.9, -136.85),
-  latitude = c(69.08, 68.97, 69.22)
-) %>%
-  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
-  st_transform(6111)
+# https://www.latlong.net/place/tuktoyaktuk-nt-canada-4297.html
+tuktoyaktuk <- tibble(name = "Tuktoyaktuk", longitude = -133.034180, latitude = 69.445358) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
 
-wm <- rnaturalearth::ne_coastline(scale = "large", returnclass = "sf") %>%
-  st_crop(xmin = -138, xmax = -134, ymin = 68, ymax = 70) %>%
-  st_transform(6111)
-
-sp <- tibble(name = "Shingle\npoint", longitude = -137.345, latitude = 68.9891) %>%
-  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
-  st_transform(6111)
-
-poi <- sp %>%
+poi <- tuktoyaktuk %>%
   st_coordinates() %>%
   as_tibble() %>%
-  mutate(label = "\uf041")
+  mutate(label = "\uf041") %>%
+  mutate(name = "Tuktoyaktuk")
 
-p2 <- ggplot() +
-  geom_sf(data = wm, size = 0.1, color = "grey40") +
-  geom_sf(data = stations_sf, size = 1) +
-  geom_sf_text(
-    data = stations_label,
-    aes(label = station_name),
-    vjust = 2.2,
-    hjust = 0.1,
-    size = 1.5
-  ) +
-  geom_sf_text(
-    data = sp,
-    aes(label = name),
-    vjust = -0.3,
-    hjust = 1.2,
+p2 <- water %>%
+  ggplot() +
+  geom_sf(fill = "white", size = 0.1) +
+  geom_sf(data = stations_sf, size = 0.5) +
+  ggrepel::geom_text_repel(
+    data = stations,
+    aes(x = longitude_w, y = latitude_n, label = sample),
+    label.size = NA,
+    label.padding = 0.1,
+    box.padding = 0.2,
+    min.segment.length = 0.25,
+    fill = alpha("white", 0.6),
     size = 2,
-    family = "Montserrat",
-    fontface = "bold"
+    hjust = 1,
+    fontface = "bold",
+    # family = "Montserrat Light",
+    segment.size = unit(0.1, "mm"),
+    max.iter = Inf,
+    max.time = 2,
+    show.legend = FALSE
   ) +
   geom_text(
     data = poi,
@@ -144,22 +180,45 @@ p2 <- ggplot() +
     color = "#007d57",
     family = "fontawesome-webfont"
   ) +
+  geom_label(
+    data = poi,
+    aes(x = X, y = Y, label = name),
+    size = 3,
+    family = "Exo",
+    color = "gray25",
+    fontface = "bold",
+    label.size = NA,
+    fill = alpha("grey95", 0.6),
+    label.padding = unit(0.1, "lines"),
+    vjust = 2
+  ) +
   labs(
     x = NULL,
     y = NULL
   ) +
+  coord_sf(xlim = c(-133.06, -132.95), ylim = c(69.44, 69.47)) +
+  theme_minimal() +
   theme(
-    axis.text = element_text(size = 4),
-    panel.grid = element_line(size = 0.2)
+    panel.background = element_rect(fill = "grey75", color = NA),
+    plot.background = element_rect(color = NA),
+    panel.grid = element_blank(),
+    panel.border = element_blank(),
+    axis.text = element_text(size = 5)
   )
 
-p <- wrap_plots(list(p1, p1, p1, p1, p1, p2), ncol = 2) +
-  plot_layout(widths = 0.5)
+# Combine -----------------------------------------------------------------
+
+p <- p1 +
+  inset_element(p2, 0.5, -0.08, 0.94, 0.35, align_to = "panel", clip = TRUE)
+
+file <- here("graphs", "fig13.pdf")
 
 ggsave(
-  here("graphs", "fig13.pdf"),
+  file,
   device = cairo_pdf,
-  width = 170,
+  width = 180,
   height = 180,
   units = "mm"
 )
+
+knitr::plot_crop(file)

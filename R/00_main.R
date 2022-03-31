@@ -23,6 +23,7 @@ library(ggrepel)
 library(MetBrewer) # For color palettes
 library(GGally)
 library(emojifont)
+library(eemR)
 
 # library(googlesheets4)
 
