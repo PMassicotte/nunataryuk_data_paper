@@ -41,11 +41,12 @@ library(showtext)
 font_add_google("Montserrat", "Montserrat")
 font_add_google("Montserrat", "Montserrat Light", regular.wt = 200)
 font_add_google("Exo", "Exo")
+font_add_google("Ubuntu", "Ubuntu")
 showtext_auto()
 
 # renv::install("PMassicotte/ggpmthemes")
 # ggpmthemes::import_montserrat()
-theme_set(theme_montserrat(base_size = 10))
+theme_set(theme_minimal(base_family = "Ubuntu", base_size = 10))
 
 theme_update(
   strip.background = element_blank(),
@@ -68,7 +69,10 @@ source(here("R", "fig07.R"))
 source(here("R", "fig08.R"))
 source(here("R", "fig09.R"))
 source(here("R", "fig10.R"))
+source(here("R", "fig11.R"))
+source(here("R", "fig12.R"))
+# source(here("R", "fig13.R"))
 
-source(here("R", "appendix01.R"))
-source(here("R", "appendix02.R"))
-source(here("R", "appendix03.R"))
+source(here("R", "appendix_b.R"))
+source(here("R", "appendix_c.R"))
+source(here("R", "appendix_d.R"))

@@ -13,9 +13,9 @@ df <- readxl::read_excel(
   .name_repair = janitor::make_clean_names
 )
 
-pdf(here("graphs", "appendix01.pdf"), width = 8, height = 6)
+cairo_pdf(here("graphs", "appendix_c.pdf"), width = 8, height = 6, family = "Ubuntu")
 
-par(mfrow = c(1, 2))
+par(mfrow = c(1, 2), family = "Ubuntu")
 
 df2 <- df %>%
   filter(str_detect(event, "3_STN125"))
@@ -46,7 +46,7 @@ axis(1,
 mtext("Temperature (C)",
   side = 1,
   line = 3,
-  col = "#01BAEF"
+  col = "#01BAEF",
 )
 
 mtext("A", side = 3, line = -1, adj = 0.95)

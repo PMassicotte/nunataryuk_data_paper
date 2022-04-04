@@ -94,18 +94,24 @@ knitr::include_graphics(pdf2png(here::here("graphs", "fig11.pdf")))
 knitr::include_graphics(pdf2png(here::here("graphs", "fig12.pdf")))
 ```
 
+---
+
+```{r}
+knitr::include_graphics(pdf2png(here::here("graphs", "fig13.pdf")))
+```
+
 ## Appendix
 
 ---
 
 ```{r}
-knitr::include_graphics(pdf2png(here::here("graphs", "appendix01.pdf")))
+knitr::include_graphics(pdf2png(here::here("graphs", "appendix_b.pdf")))
 ```
 
 ```{r}
-knitr::include_graphics(pdf2png(here::here("graphs", "appendix02.pdf")))
+knitr::include_graphics(pdf2png(here::here("graphs", "appendix_c.pdf")))
 ```
 
 ```{r}
-knitr::include_graphics(pdf2png(here::here("graphs", "appendix03.pdf")))
+knitr::include_graphics(pdf2png(here::here("graphs", "appendix_d.pdf")))
 ```

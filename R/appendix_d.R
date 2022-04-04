@@ -54,8 +54,8 @@ p <- df %>%
     "ggthemes::excel_Headlines",
     guide = guide_legend(
       title.position = "top",
-      title.theme = element_text(size = 8, family = "Roboto Light"),
-      label.theme = element_text(size = 6, family = "Roboto Light"),
+      title.theme = element_text(size = 8, family = "Montserrat"),
+      label.theme = element_text(size = 6, family = "Montserrat"),
       label.position = "bottom",
       override.aes = list(size = 2)
     ),
@@ -64,8 +64,8 @@ p <- df %>%
   scale_shape(
     guide = guide_legend(
       title.position = "top",
-      title.theme = element_text(size = 8, family = "Roboto Light"),
-      label.theme = element_text(size = 6, family = "Roboto Light"),
+      title.theme = element_text(size = 8, family = "Montserrat"),
+      label.theme = element_text(size = 6, family = "Montserrat"),
       label.position = "bottom",
       override.aes = list(size = 2)
     )
@@ -79,11 +79,13 @@ p <- df %>%
   theme(
     legend.justification = c(1, 0),
     legend.position = c(0.99, 0.05),
-    legend.direction = "horizontal"
+    legend.direction = "horizontal",
+    legend.text = element_text(family = "Montserrat"),
+    legend.title = element_text(family = "Montserrat")
   )
 
 ggsave(
-  here("graphs", "appendix02.pdf"),
+  here("graphs", "appendix_d.pdf"),
   device = cairo_pdf,
   width = 120,
   height = 90,

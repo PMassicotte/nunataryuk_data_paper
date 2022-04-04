@@ -253,7 +253,6 @@ p1 <- ggplot() +
     style = north_arrow_nautical(
       fill = c("grey40", "white"),
       line_col = "grey20",
-      text_family = "ArcherPro Book",
       text_size = 6,
       line_width = 0.5
     )
@@ -277,7 +276,7 @@ p1 <- ggplot() +
     legend.direction = "horizontal",
     legend.position = c(0.01, 0.38),
     legend.justification = c(0, 0),
-    legend.background = element_rect(fill = "transparent")
+    legend.background = element_rect(fill = "transparent", color = "transparent")
   )
 
 # Inset -------------------------------------------------------------------
@@ -343,7 +342,8 @@ p2 <- canada %>%
   ) +
   theme(
     text = element_text(size = 6),
-    panel.background = element_blank(),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
     axis.title = element_blank(),
     axis.text = element_blank(),
     axis.ticks = element_blank()

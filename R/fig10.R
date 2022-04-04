@@ -1,41 +1,76 @@
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # AUTHOR:       Philippe Massicotte
 #
-# DESCRIPTION:  Rrs spectra from the C-OPS across the different legs. Note that
-# there are no spectra for leg #1.
+# DESCRIPTION:  Boxplots showing bacteria abundances across the expeditions.
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 rm(list = ls())
 
 df <- read_csv(here("data", "clean", "merged_data.csv"))
 
-# Using scale_color_manual because no data for leg1, so I manually set the
-# correct colors for legs 2-3-4.
+df
 
-p <- df %>%
-  select(event, expedition, contains("rrs")) %>%
-  pivot_longer(-c(expedition, event)) %>%
-  drop_na() %>%
-  mutate(wavelength = parse_number(str_extract(name, "\\d{3}"))) %>%
-  ggplot(aes(x = wavelength, y = value, group = event, color = factor(expedition))) +
-  geom_line(size = 0.25) +
-  scale_color_manual(
-    breaks = c(2, 3, 4),
-    values = c("#E56B1EFF", "#FFCD22FF", "#15274DFF")
-  ) +
+# Chlorophyll-a -----------------------------------------------------------
+
+p1 <- df %>%
+  ggplot(aes(x = factor(expedition), y = chl_a_mg_m3, fill = factor(expedition))) +
+  geom_boxplot(size = 0.1, outlier.size = 0.1) +
+  # scale_y_log10() +
+  # annotation_logticks(sides = "l", size = 0.1) +
+  scale_x_discrete(labels = function(x) {
+    glue("Leg {x}")
+  }) +
+  paletteer::scale_fill_paletteer_d("suffrager::london") +
   labs(
-    x = "Wavelength (nm)",
-    y = quote(Rrs~(sr^{-1}))
+    x = NULL,
+    y = quote("Chlorophyll-a" ~ (mg ~ m^{
+      -3
+    }))
   ) +
-  facet_wrap(~glue("Leg {expedition}"), ncol = 1) +
   theme(
-    legend.position = "none"
+    legend.position = "none",
+    axis.ticks = element_blank(),
+    panel.border = element_blank()
   )
 
+
+# Total bacterial abundance -----------------------------------------------
+
+p2 <- df %>%
+  filter(bacteria_cells_m_l >= 1e5) %>%
+  ggplot(aes(x = factor(expedition), y = bacteria_cells_m_l, fill = factor(expedition))) +
+  geom_boxplot(size = 0.1, outlier.size = 0.1) +
+  annotation_logticks(sides = "l", size = 0.1) +
+  scale_x_discrete(labels = function(x) {
+    glue("Leg {x}")
+  }) +
+  scale_y_log10() +
+  paletteer::scale_fill_paletteer_d("suffrager::london", ) +
+  labs(
+    x = NULL,
+    y = quote("Bacterial abundance" ~ (cells ~ mL^{
+      -1
+    }))
+  ) +
+  theme(
+    legend.position = "none",
+    axis.ticks = element_blank(),
+    panel.border = element_blank()
+  )
+
+# Combine and save --------------------------------------------------------
+
+p <- p1 + p2 +
+  plot_layout(ncol = 1) +
+  plot_annotation(tag_levels = "a", tag_prefix = "(", tag_suffix = ")") &
+  theme(plot.tag = element_text(face = "bold"))
+
+filename <- here("graphs", "fig10.pdf")
+
 ggsave(
-  here("graphs", "fig10.pdf"),
+  filename,
   device = cairo_pdf,
-  width = 80,
-  height = 140,
+  width = 90,
+  height = 120,
   units = "mm"
 )

@@ -55,7 +55,7 @@ df %>%
   )
 
 ggsave(
-  here("graphs", "appendix03.pdf"),
+  here("graphs", "appendix_b.pdf"),
   device = cairo_pdf,
   width = 120,
   height = 90,

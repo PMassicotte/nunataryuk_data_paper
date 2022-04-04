@@ -88,12 +88,13 @@ p2 <- stations %>%
     panel.border = element_blank(),
     legend.justification = c(1, 0),
     legend.position = c(0.95, 0.05),
+    legend.text = element_text(family = "Montserrat"),
     legend.title = element_blank(),
     axis.ticks = element_blank()
   )
 
 p <- p1 / p2 +
-  plot_annotation(tag_levels = "A") &
+  plot_annotation(tag_levels = "a", tag_prefix = "(", tag_suffix = ")") &
   theme(plot.tag = element_text(face = "bold"))
 
 ggsave(

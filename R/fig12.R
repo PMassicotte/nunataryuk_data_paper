@@ -287,7 +287,6 @@ p <- ggplot() +
     style = north_arrow_nautical(
       fill = c("grey40", "white"),
       line_col = "grey20",
-      text_family = "ArcherPro Book",
       text_size = 6,
       line_width = 0.5
     )
@@ -311,7 +310,7 @@ p <- ggplot() +
     legend.direction = "horizontal",
     legend.position = c(0.01, 0.01),
     legend.justification = c(0, 0),
-    legend.background = element_rect(fill = "transparent")
+    legend.background = element_rect(fill = "transparent", color = "transparent")
   )
 
 filename <- here("graphs", "fig12.pdf")

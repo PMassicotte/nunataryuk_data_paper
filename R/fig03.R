@@ -55,10 +55,36 @@ discharge[, date_discharge := date]
 leg_periods <- discharge[legs, on = .(date >= start, date <= end)] %>%
   as_tibble()
 
+leg_periods_start_end <- leg_periods %>%
+  group_by(cruise) %>%
+  summarise(
+    date_discharge_min = min(date_discharge),
+    date_discharge_max = max(date_discharge)
+  ) %>%
+  ungroup()
+
 p1 <- discharge %>%
   ggplot(aes(x = date, y = discharge)) +
   geom_line(color = "grey60", size = 0.5) +
-  geom_line(data = leg_periods, aes(x = date_discharge, color = factor(cruise)), size = 0.5) +
+  geom_line(
+    data = leg_periods,
+    aes(x = date_discharge, color = factor(cruise)),
+    size = 0.5
+  ) +
+  geom_rect(
+  data = leg_periods_start_end,
+  aes(
+    xmin = date_discharge_min,
+    xmax = date_discharge_max,
+    ymin = -Inf,
+    ymax = Inf,
+    fill = factor(cruise),
+  ),
+    alpha = 0.2,
+    inherit.aes = FALSE,
+    show.legend = FALSE
+  ) +
+  paletteer::scale_fill_paletteer_d("suffrager::london") +
   paletteer::scale_color_paletteer_d(
     "suffrager::london",
     labels = function(x) {
@@ -132,6 +158,20 @@ p2 <- airtemp %>%
     ),
     size = 0.5
   ) +
+  geom_rect(
+    data = leg_periods_start_end,
+    aes(
+      xmin = date_discharge_min,
+      xmax = date_discharge_max,
+      ymin = -Inf,
+      ymax = Inf,
+      fill = factor(cruise),
+    ),
+    alpha = 0.2,
+    inherit.aes = FALSE,
+    show.legend = FALSE
+  ) +
+  paletteer::scale_fill_paletteer_d("suffrager::london") +
   paletteer::scale_color_paletteer_d("suffrager::london") +
   geom_hline(
     yintercept = 0,
@@ -152,7 +192,7 @@ p2 <- airtemp %>%
 # Combine plots -----------------------------------------------------------
 
 p <- p1 / p2 +
-  plot_annotation(tag_levels = "A") &
+  plot_annotation(tag_levels = "a", tag_prefix = "(", tag_suffix = ")") &
   theme(plot.tag = element_text(face = "bold"))
 
 ggsave(

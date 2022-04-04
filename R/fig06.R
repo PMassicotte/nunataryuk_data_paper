@@ -46,7 +46,7 @@ p9 <- ggboxlpot(df_viz, expedition = expedition, y = a_p443_1_m, ylab = "a[p](44
 
 p <- p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 +
   plot_layout(ncol = 3, nrow = 3) +
-  plot_annotation(tag_levels = "A") &
+  plot_annotation(tag_levels = "a", tag_prefix = "(", tag_suffix = ")") &
   theme(plot.tag = element_text(face = "bold"))
 
 ggsave(

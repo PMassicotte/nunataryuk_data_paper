@@ -91,10 +91,8 @@ p1
 # Map overview ------------------------------------------------------------
 
 stations <-
-
-  stations <-
   readxl::read_excel(here("data/raw/fluorescence_3d_gw_Nuna/Sample_ID.xlsx"),
-                     skip = 1
+    skip = 1
   ) %>%
   janitor::clean_names() %>%
   filter(

@@ -126,7 +126,7 @@ river_network <-
   st_crop(c(
     xmin = -141,
     xmax = -130,
-    ymin = 68,
+    ymin = 65,
     ymax = 70
   )) %>%
   st_transform(st_crs(wm))

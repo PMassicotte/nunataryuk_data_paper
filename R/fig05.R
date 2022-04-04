@@ -74,8 +74,8 @@ river_network <-
 p <- ggplot() +
   geom_sf(data = wm, size = 0.01) +
   geom_sf(data = river_network, size = 0.1, color = "gray50") +
-  geom_sf(data = df_sf, size = 0.7) +
-  geom_sf(data = df_sf, aes(color = sal_ctd), size = 0.5) +
+  geom_sf(data = df_sf, size = 1.2) +
+  geom_sf(data = df_sf, aes(color = sal_ctd), size = 1) +
   scale_color_viridis_c(
     option = "C",
     trans = "log10",
@@ -91,10 +91,10 @@ p <- ggplot() +
     limits = c(0.01, 40),
     oob = scales::squish
   ) +
-  facet_wrap(~ glue("Leg {expedition}")) +
+  facet_wrap(~glue("Leg {expedition}")) +
   coord_sf(
-    xlim = c(-140, -130),
-    ylim = c(68, 70.5),
+    xlim = c(-138, -133),
+    ylim = c(68.2, 69.8),
     expand = TRUE
   ) +
   labs(
@@ -104,7 +104,7 @@ p <- ggplot() +
     panel.grid = element_blank(),
     panel.border = element_blank(),
     legend.justification = c(0, 1),
-    legend.position = c(0.01, 0.99),
+    legend.position = c(0.01, 0.62),
     legend.background = element_blank(),
     legend.direction = "horizontal",
     strip.text = element_text(size = 14, face = "bold"),
@@ -119,8 +119,8 @@ filename <- here("graphs", "fig05.pdf")
 ggsave(
   filename,
   device = cairo_pdf,
-  width = 190,
-  height = 190,
+  width = 160,
+  height = 160,
   units = "mm"
 )
 
