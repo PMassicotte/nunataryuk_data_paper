@@ -66,8 +66,8 @@ p1 <- eems %>%
     guide = guide_colorbar(
       title = "Fluorescence (R.U.)",
       title.position = "top",
-      title.theme = element_text(family = "Exo", hjust = 0.5, size = 7),
-      label.theme = element_text(family = "Exo", size = 6),
+      title.theme = element_text(family = "Montserrat", hjust = 0.5, size = 7),
+      label.theme = element_text(family = "Montserrat", size = 6),
       barwidth = unit(30, "mm"),
       barheight = unit(2, "mm")
     )
@@ -77,9 +77,7 @@ p1 <- eems %>%
     y = "Emission (nm)"
   ) +
   facet_wrap(~sample, ncol = 2) +
-  theme_minimal() +
   theme(
-    text = element_text(family = "Montserrat"),
     panel.grid = element_blank(),
     legend.justification = c(0, 0),
     legend.position = c(0.17, 0),
@@ -165,7 +163,6 @@ p2 <- water %>%
     size = 2,
     hjust = 1,
     fontface = "bold",
-    # family = "Montserrat Light",
     segment.size = unit(0.1, "mm"),
     max.iter = Inf,
     max.time = 2,
@@ -195,7 +192,6 @@ p2 <- water %>%
     y = NULL
   ) +
   coord_sf(xlim = c(-133.06, -132.95), ylim = c(69.44, 69.47)) +
-  theme_minimal() +
   theme(
     panel.background = element_rect(fill = "grey75", color = NA),
     plot.background = element_rect(color = NA),
