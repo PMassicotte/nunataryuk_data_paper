@@ -7,12 +7,25 @@
 
 rm(list = ls())
 
-eems <- eem_read(here("data/raw/fluorescence_3d_gw_Nuna/eems/"), import_function = "cary")
+eems <-
+  eem_read(here("data", "raw", "fluorescence_3d_gw_Nuna", "eems"),
+    import_function = "cary"
+  )
+
+eem_names(eems) <- str_sub(eem_names(eems), end = -2)
+
+files <- fs::dir_ls(here("data", "raw", "fluorescence_3d_gw_Nuna"), glob = "*.csv")
+
+absorbance <- read_csv(files, id = "station") %>%
+  mutate(station = basename(station)) %>%
+  mutate(station = str_remove(station, "abs.csv")) %>%
+  rename(wavelength = nm) %>%
+  pivot_wider(names_from = station, values_from = A)
 
 eems <- eems %>%
   eem_remove_blank() %>%
   eem_raman_normalisation() %>%
-  # eem_remove_scattering(type = "raman") %>%
+  eem_inner_filter_effect(absorbance) %>%
   eem_remove_scattering(type = "rayleigh") %>%
   eem_remove_scattering(type = "rayleigh", 2) %>%
   eem_extract(1, keep = FALSE)
@@ -37,7 +50,7 @@ eems
 range(eems$fluorescence, na.rm = TRUE)
 
 eems <- eems %>%
-  mutate(sample = str_match(sample, "(\\d{2})f")[, 2]) %>%
+  mutate(sample = str_match(sample, "(\\d{2}$)")[, 2]) %>%
   mutate(sample = parse_number(sample)) %>%
   mutate(sample = glue("Station {sample}"))
 
@@ -47,7 +60,6 @@ eems <- eems %>%
     sample,
     levels = c("Station 18", "Station 17", "Station 15", "Station 7", "Station 4")
   ))
-
 
 p1 <- eems %>%
   mutate(fluorescence = ifelse(fluorescence < 0, 0, fluorescence)) %>%
@@ -89,7 +101,7 @@ p1
 # Map overview ------------------------------------------------------------
 
 stations <-
-  readxl::read_excel(here("data/raw/fluorescence_3d_gw_Nuna/Sample_ID.xlsx"),
+  readxl::read_excel(here("data", "raw", "fluorescence_3d_gw_Nuna", "Sample_ID.xlsx"),
     skip = 1
   ) %>%
   janitor::clean_names() %>%
