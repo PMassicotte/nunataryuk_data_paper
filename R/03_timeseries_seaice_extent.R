@@ -1,6 +1,10 @@
 bb <- st_bbox(c(xmin =-140, xmax = -132.5, ymin = 68, ymax = 70), crs = 4326)
 
-files <- fs::dir_ls("~/Desktop/2019/", glob = "*.shp", recurse = TRUE)
+files <-
+  fs::dir_ls(here("data", "raw", "ice_cover", "sic"),
+    glob = "*.shp",
+    recurse = TRUE
+  )
 
 seaice_extent <- function(file, bb) {
 
@@ -29,7 +33,7 @@ r <- seaice_extent(files[1], bb)
 
 r
 
-df <- future_map_dfr(files, seaice_extent, bb = bb)
+df <- map_dfr(files, seaice_extent, bb = bb)
 
 df %>%
   mutate(area = as.numeric(area)) %>%
