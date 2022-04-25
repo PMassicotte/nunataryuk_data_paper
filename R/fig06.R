@@ -39,7 +39,7 @@ p4 <- ggboxlpot(df_viz, expedition = expedition, y = a_cdom443_1_m, ylab = "a[CD
 p5 <- ggboxlpot(df_viz, expedition = expedition, y = doc_mg_l, ylab = "DOC~(mg~L^{-1})")
 p6 <- ggboxlpot(df_viz, expedition = expedition, y = suva350, ylab = "SUVA[350]~(m^2~gC^{-1})")
 p7 <- ggboxlpot(df_viz, expedition = expedition, y = spm_mg_l, ylab = "SPM~(mu*g~mL^{-1})")
-p8 <- ggboxlpot(df_viz, expedition = expedition, y = poc_mug_ml, ylab = "POC~(mu*g~mL^{-1})")
+p8 <- ggboxlpot(df_viz, expedition = expedition, y = poc_mug_ml, ylab = "POC~(mg~L^{-1})")
 p9 <- ggboxlpot(df_viz, expedition = expedition, y = a_p443_1_m, ylab = "a[p](443)~(m^{-1})")
 
 # Combine and save --------------------------------------------------------
