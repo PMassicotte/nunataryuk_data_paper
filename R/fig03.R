@@ -55,6 +55,13 @@ discharge[, date_discharge := date]
 leg_periods <- discharge[legs, on = .(date >= start, date <= end)] %>%
   as_tibble()
 
+# Extract the maximum value within each leg for stats in the paper
+leg_periods %>%
+  group_by(cruise) %>%
+  filter(discharge == max(discharge, na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(cruise, date, discharge)
+
 leg_periods_start_end <- leg_periods %>%
   group_by(cruise) %>%
   summarise(
