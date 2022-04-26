@@ -32,15 +32,76 @@ df_viz <- df %>%
 
 # Boxplots ----------------------------------------------------------------
 
-p1 <- ggboxlpot(df_viz, expedition = expedition, y = sal_ctd, ylab = "Salinity")
-p2 <- ggboxlpot(df_viz, expedition = expedition, y = temp_ctd_c, ylab = "Temperature~(C)")
-p3 <- ggboxlpot(df_viz, expedition = expedition, y = d18o_vs_smow, ylab = "delta^{18}*O")
-p4 <- ggboxlpot(df_viz, expedition = expedition, y = a_cdom443_1_m, ylab = "a[CDOM](443)~(m^{-1})")
-p5 <- ggboxlpot(df_viz, expedition = expedition, y = doc_mg_l, ylab = "DOC~(mg~L^{-1})")
-p6 <- ggboxlpot(df_viz, expedition = expedition, y = suva350, ylab = "SUVA[350]~(m^2~gC^{-1})")
-p7 <- ggboxlpot(df_viz, expedition = expedition, y = spm_mg_l, ylab = "SPM~(mu*g~mL^{-1})")
-p8 <- ggboxlpot(df_viz, expedition = expedition, y = poc_mug_ml, ylab = "POC~(mg~L^{-1})")
-p9 <- ggboxlpot(df_viz, expedition = expedition, y = a_p443_1_m, ylab = "a[p](443)~(m^{-1})")
+p1 <-
+  ggboxlpot(df_viz,
+    expedition = expedition,
+    y = sal_ctd,
+    ylab = "Salinity",
+    ymin = 0
+  )
+
+p2 <-
+  ggboxlpot(df_viz,
+    expedition = expedition,
+    y = temp_ctd_c,
+    ylab = "Temperature~(degree*C)",
+    ymin = 0
+  )
+
+p3 <-
+  ggboxlpot(df_viz,
+    expedition = expedition,
+    y = d18o_vs_smow,
+    ylab = "delta^{18}*O"
+  )
+
+p4 <-
+  ggboxlpot(df_viz,
+    expedition = expedition,
+    y = a_cdom443_1_m,
+    ylab = "a[CDOM](443)~(m^{-1})",
+    ymin = 0
+  )
+
+p5 <-
+  ggboxlpot(df_viz,
+    expedition = expedition,
+    y = doc_mg_l,
+    ylab = "DOC~(mg~L^{-1})",
+    ymin = 0
+  )
+
+p6 <-
+  ggboxlpot(df_viz,
+    expedition = expedition,
+    y = suva350,
+    ylab = "SUVA[350]~(m^2~gC^{-1})",
+    ymin = 0
+  )
+
+p7 <-
+  ggboxlpot(df_viz,
+    expedition = expedition,
+    y = spm_mg_l,
+    ylab = "SPM~(mu*g~mL^{-1})",
+    ymin = 0
+  )
+
+p8 <-
+  ggboxlpot(df_viz,
+    expedition = expedition,
+    y = poc_mug_ml,
+    ylab = "POC~(mu*g~mL^{-1})",
+    ymin = 0
+  )
+
+p9 <-
+  ggboxlpot(df_viz,
+    expedition = expedition,
+    y = a_p443_1_m,
+    ylab = "a[p](443)~(m^{-1})",
+    ymin = 0
+  )
 
 # Combine and save --------------------------------------------------------
 
