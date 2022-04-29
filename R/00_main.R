@@ -25,28 +25,23 @@ library(GGally)
 library(emojifont)
 library(eemR)
 library(gt)
-
-# library(googlesheets4)
-
-# library(furrr)
-# plan(multisession(workers = availableCores() - 2))
+library(showtext)
+library(knitr)
+library(kableExtra)
 
 # renv::install("MilesMcBain/breakerofchains")
 # renv::install("mcguinlu/pathformatr")
-
 # renv::install("ropensci/rnaturalearthdata")
 # renv::install("ropensci/rnaturalearthhires")
+# renv::install("pmassicotte/ggpmthemes")
 
 # Set default ggplot2 font size and font family
-library(showtext)
 font_add_google("Montserrat", "Montserrat")
 font_add_google("Montserrat", "Montserrat Light", regular.wt = 200)
 font_add_google("Exo", "Exo")
 font_add_google("Ubuntu", "Ubuntu")
 showtext_auto()
 
-# renv::install("PMassicotte/ggpmthemes")
-# ggpmthemes::import_montserrat()
 theme_set(theme_minimal(base_family = "Ubuntu", base_size = 10))
 
 theme_update(
