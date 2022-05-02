@@ -929,11 +929,11 @@
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "PMassicotte",
+      "RemoteUsername": "pmassicotte",
       "RemoteRepo": "ggpmthemes",
       "RemoteRef": "master",
       "RemoteSha": "9c118ccf583c78f5c9e40af1b87fae3f293d9a08",
-      "Hash": "c6a896886c0cf115af98e65a5b0be012",
+      "Hash": "c53ffb9d476334c13c863cac4369e741",
       "Requirements": [
         "extrafont",
         "ggplot2",
@@ -1367,6 +1367,29 @@
       "Repository": "CRAN",
       "Hash": "d07e729b27b372429d42d24d503613a0",
       "Requirements": []
+    },
+    "kableExtra": {
+      "Package": "kableExtra",
+      "Version": "1.3.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "49b625e6aabe4c5f091f5850aba8ff78",
+      "Requirements": [
+        "digest",
+        "glue",
+        "htmltools",
+        "knitr",
+        "magrittr",
+        "rmarkdown",
+        "rstudioapi",
+        "rvest",
+        "scales",
+        "stringr",
+        "svglite",
+        "viridisLite",
+        "webshot",
+        "xml2"
+      ]
     },
     "knitr": {
       "Package": "knitr",
