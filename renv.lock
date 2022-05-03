@@ -606,10 +606,10 @@
     },
     "dplyr": {
       "Package": "dplyr",
-      "Version": "1.0.8",
+      "Version": "1.0.9",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "ef47665e64228a17609d6df877bf86f2",
+      "Hash": "f0bda1627a7f5d3f9a0b5add931596ac",
       "Requirements": [
         "R6",
         "generics",
@@ -877,16 +877,10 @@
     },
     "ggplot2": {
       "Package": "ggplot2",
-      "Version": "3.3.5",
-      "Source": "CRAN",
+      "Version": "3.3.6",
+      "Source": "Repository",
       "Repository": "CRAN",
-      "RemoteType": "standard",
-      "RemotePkgRef": "ggplot2",
-      "RemoteRef": "ggplot2",
-      "RemoteRepos": "https://cran.rstudio.com/",
-      "RemotePkgPlatform": "source",
-      "RemoteSha": "3.3.5",
-      "Hash": "d7566c471c7b17e095dd023b9ef155ad",
+      "Hash": "0fb26d0674c82705c6b701d1a61e02ea",
       "Requirements": [
         "MASS",
         "digest",
@@ -1949,14 +1943,16 @@
     },
     "quantreg": {
       "Package": "quantreg",
-      "Version": "5.88",
+      "Version": "5.93",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b7d49f60ce945abad300246d4766326a",
+      "Hash": "48485e5cbfe385caf47ce1d9442f5147",
       "Requirements": [
+        "MASS",
         "Matrix",
         "MatrixModels",
-        "SparseM"
+        "SparseM",
+        "survival"
       ]
     },
     "rapidjsonr": {
@@ -2443,6 +2439,16 @@
         "stringi"
       ]
     },
+    "survival": {
+      "Package": "survival",
+      "Version": "3.3-1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "f6189c70451d3d68e0d571235576e833",
+      "Requirements": [
+        "Matrix"
+      ]
+    },
     "svglite": {
       "Package": "svglite",
       "Version": "2.1.0",
@@ -2498,16 +2504,10 @@
     },
     "tibble": {
       "Package": "tibble",
-      "Version": "3.1.6",
-      "Source": "CRAN",
+      "Version": "3.1.7",
+      "Source": "Repository",
       "Repository": "CRAN",
-      "RemoteType": "standard",
-      "RemotePkgRef": "tibble",
-      "RemoteRef": "tibble",
-      "RemoteRepos": "https://cran.rstudio.com/",
-      "RemotePkgPlatform": "source",
-      "RemoteSha": "3.1.6",
-      "Hash": "8a8f02d1934dfd6431c671361510dd0b",
+      "Hash": "08415af406e3dd75049afef9552e7355",
       "Requirements": [
         "ellipsis",
         "fansi",

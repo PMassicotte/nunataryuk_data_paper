@@ -59,7 +59,7 @@ table <- kable(
   ) |>
   row_spec(0, bold = TRUE) %>%
   row_spec(1:nrow(df_table), hline_after = TRUE) %>%
-  landscape() |>
+  # landscape() |>
   column_spec(1, width = "1.5cm") |>
   column_spec(2, width = "1.25cm") |>
   column_spec(3:6, width = "0.05cm") |>
