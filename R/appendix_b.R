@@ -22,15 +22,13 @@ df %>%
   paletteer::scale_color_paletteer_d(
     "suffrager::CarolMan",
     guide = guide_legend(
-      label.theme = element_text(size = 6, family = "Roboto Light"),
-      label.position = "bottom",
-      override.aes = list(size = 2),
-      ncol = 2
+      label.theme = element_text(size = 7, family = "Montserrat"),
+      override.aes = list(size = 2)
     )
   ) +
   scale_y_continuous(breaks = scales::breaks_pretty()) +
   scale_x_continuous(breaks = scales::breaks_pretty()) +
-  geom_smooth(method = "lm", size = 0.5, color = "#E25247FF", alpha = 0.25) +
+  geom_smooth(method = "lm", size = 0.5, color = "#3C3C3C", alpha = 0.25) +
   ggpmisc::stat_poly_eq(
     aes(label = ..eq.label..),
     label.y.npc = 0.95,
@@ -50,8 +48,7 @@ df %>%
   theme(
     legend.justification = c(1, 0),
     legend.position = c(0.99, 0.05),
-    legend.title = element_blank(),
-    legend.direction = "horizontal"
+    legend.title = element_blank()
   )
 
 ggsave(
