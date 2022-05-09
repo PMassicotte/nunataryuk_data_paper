@@ -170,6 +170,17 @@ p1 <- ggplot() +
       nrow = 1
     )
   ) +
+  geom_sf(data = wm, size = 0.15) +
+  geom_sf(
+    data = river_network %>% st_intersection(wm),
+    size = 0.1,
+    color = "grey50"
+  ) +
+  geom_sf(
+    data = st_jitter(stations_sf),
+    aes(color = factor(expedition), shape = factor(expedition)),
+    size = 1.5
+  ) +
   paletteer::scale_color_paletteer_d(
     "suffrager::london",
     labels = function(x) {
@@ -183,16 +194,23 @@ p1 <- ggplot() +
       order = 1
     )
   ) +
-  geom_sf(data = wm, size = 0.15) +
-  geom_sf(
-    data = river_network %>% st_intersection(wm),
-    size = 0.1,
-    color = "grey50"
-  ) +
-  geom_sf(
-    data = st_jitter(stations_sf),
-    aes(color = factor(expedition)),
-    size = 1.5
+  scale_shape_manual(
+    values = c(
+      "1" = 0,
+      "2" = 1,
+      "3" = 2,
+      "4" = 3
+    ),
+    labels = function(x) {
+      paste("Leg", x)
+    },
+    guide = guide_legend(
+      title = element_blank(),
+      # override.aes = list(size = 3),
+      label.position = "top",
+      label.theme = element_text(size = 6, family = "Montserrat"),
+      order = 1
+    )
   ) +
   geom_text(
     data = poi,
@@ -257,6 +275,8 @@ p1 <- ggplot() +
       line_width = 0.5
     )
   ) +
+  # guides(shape = "none") +
+  # labs(color = 1, shape = 1) +
   coord_sf(
     xlim = c(-140, -132.5),
     ylim = c(67.25, 70),
