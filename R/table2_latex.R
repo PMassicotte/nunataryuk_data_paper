@@ -60,14 +60,14 @@ table <- kable(
   row_spec(0, bold = TRUE) %>%
   row_spec(1:nrow(df_table), hline_after = TRUE) %>%
   # landscape() |>
-  column_spec(1, width = "1.5cm") |>
+  column_spec(1, width = "1cm") |>
   column_spec(2, width = "1.25cm") |>
   column_spec(3:6, width = "0.05cm") |>
   column_spec(7, width = "0.75cm") |>
   column_spec(8, width = "2cm") |>
   column_spec(9, width = "1.5cm") |>
-  column_spec(10, width = "2.5cm") |>
+  column_spec(10, width = "2cm") |>
   column_spec(11, width = "1cm") |>
-  column_spec(12, width = "1.5cm")
+  column_spec(12, width = "3.5cm")
 
 write_lines(table, here("tables", "table2.tex"))
